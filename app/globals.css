@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24
+}
+
+.secondary-nav-item {
+  @apply flex items-center gap-2 text-white/80 hover:text-white transition-colors text-sm font-semibold py-4 border-b-2 border-transparent hover:border-violet-500;
+}
+
+.secondary-nav-item.active {
+  @apply text-white border-violet-500;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

@@ -95,10 +95,10 @@ export default function Navbar() {
                 <span className="text-xs text-white/70">{t('common.balance')}</span>
                 <span className="font-bold text-white text-sm">₺{user?.balance?.toFixed(2) || '0.00'}</span>
               </div>
-              
+
               {/* Notifications */}
               <NotificationDropdown userId={user?._id || user?.id} />
-              
+
               {/* User Menu */}
               <div className="relative">
                 <button
@@ -109,7 +109,7 @@ export default function Navbar() {
                   <span className="hidden sm:block truncate max-w-[100px]">{user?.username || user?.firstName || 'User'}</span>
                   <span className="material-symbols-outlined text-base">{showUserMenu ? 'expand_less' : 'expand_more'}</span>
                 </button>
-                
+
                 {/* Dropdown Menu */}
                 {showUserMenu && (
                   <div className="absolute right-0 mt-2 w-48 rounded-lg bg-[#1f1d37] border border-white/10 shadow-lg z-50">
@@ -175,7 +175,7 @@ export default function Navbar() {
               <span>{currentTime}</span>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
             className="lg:hidden flex items-center justify-center h-9 w-9 text-white hover:bg-white/10 rounded transition-colors"
             aria-label="Toggle menu"
@@ -189,80 +189,80 @@ export default function Navbar() {
       {showMobileMenu && (
         <div className="lg:hidden border-t border-white/10 bg-[#1f1d37]">
           <nav className="flex flex-col py-2">
-            <Link 
-              href="/promotions" 
+            <Link
+              href="/promotions"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/promotions') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">military_tech</span>
               {t('common.promotions')}
             </Link>
-            <Link 
-              href="/live-betting" 
+            <Link
+              href="/live-betting"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/live-betting') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">bolt</span>
               {t('common.liveBet')}
             </Link>
-            <Link 
-              href="/sports" 
+            <Link
+              href="/sports"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/sports') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">sports_soccer</span>
               {t('common.sports')}
             </Link>
-            <Link 
-              href="/slots" 
+            <Link
+              href="/slots"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/slots') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">casino</span>
               {t('common.slotGames')}
             </Link>
-            <Link 
-              href="/live-casino" 
+            <Link
+              href="/live-casino"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/live-casino') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">playing_cards</span>
               {t('common.liveCasino')}
             </Link>
-            <Link 
-              href="/dice-roll" 
+            <Link
+              href="/dice-roll"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/dice-roll') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">casino</span>
               Dice Roll
             </Link>
-            <Link 
-              href="/crash" 
+            <Link
+              href="/crash"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/crash') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">trending_up</span>
               {t('common.crash')}
             </Link>
-            <Link 
-              href="/tv-games" 
+            <Link
+              href="/tv-games"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/tv-games') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">live_tv</span>
               {t('common.tvGames')}
             </Link>
-            <Link 
-              href="/tournaments" 
+            <Link
+              href="/tournaments"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/tournaments') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">emoji_events</span>
               {t('common.tournaments')}
             </Link>
-            <Link 
-              href="/more" 
+            <Link
+              href="/more"
               onClick={() => setShowMobileMenu(false)}
               className={`px-4 py-2 text-sm ${isActive('/more') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
@@ -274,7 +274,7 @@ export default function Navbar() {
       )}
 
       {/* Navigation Bar */}
-      <nav className="hidden lg:flex items-center justify-center gap-8 border-t border-b border-white/10 px-4 sm:px-6 lg:px-8 bg-[#1f1d37]">
+      {/* <nav className="hidden lg:flex p-3 items-center justify-center gap-8 border-t border-b border-white/10 px-4 sm:px-6 lg:px-8 bg-[#1f1d37]">
         <Link 
           href="/promotions" 
           className={`secondary-nav-item ${isActive('/promotions') ? 'active' : ''}`}
@@ -329,8 +329,123 @@ export default function Navbar() {
         >
           <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/more') ? "'FILL' 1" : "'FILL' 0" }}>more_horiz</span> {t('common.more')}
         </Link>
-      </nav>
-      
+      </nav> */}
+   {/* Navigation Bar */}
+<nav className="hidden lg:flex items-center justify-center gap-6 border-t border-b border-white/10 bg-[#1f1d37] px-4 sm:px-6 lg:px-8 py-3">
+  <Link
+    href="/promotions"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/promotions') ? 'active' : ''}`}
+  >
+    <span className="material-symbols-outlined text-base">military_tech</span>
+    {t('common.promotions')}
+  </Link>
+
+  <Link
+    href="/live-betting"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/live-betting') ? 'active' : ''}`}
+  >
+    <span
+      className="material-symbols-outlined text-base"
+      style={{ fontVariationSettings: isActive('/live-betting') ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      bolt
+    </span>
+    {t('common.liveBet')}
+  </Link>
+
+  <Link
+    href="/sports"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/sports') ? 'active' : ''}`}
+  >
+    <span
+      className="material-symbols-outlined text-base"
+      style={{ fontVariationSettings: isActive('/sports') ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      sports_soccer
+    </span>
+    {t('common.sports')}
+  </Link>
+
+  <Link
+    href="/slots"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/slots') ? 'active' : ''}`}
+  >
+    <span
+      className="material-symbols-outlined text-base"
+      style={{ fontVariationSettings: isActive('/slots') ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      casino
+    </span>
+    {t('common.slotGames')}
+  </Link>
+
+  <Link
+    href="/live-casino"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/live-casino') ? 'active' : ''}`}
+  >
+    <span
+      className="material-symbols-outlined text-base"
+      style={{ fontVariationSettings: isActive('/live-casino') ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      playing_cards
+    </span>
+    {t('common.liveCasino')}
+  </Link>
+
+  <Link
+    href="/crash"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/crash') ? 'active' : ''}`}
+  >
+    <span
+      className="material-symbols-outlined text-base"
+      style={{ fontVariationSettings: isActive('/crash') ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      trending_up
+    </span>
+    {t('common.crash')}
+  </Link>
+
+  <Link
+    href="/tv-games"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/tv-games') ? 'active' : ''}`}
+  >
+    <span
+      className="material-symbols-outlined text-base"
+      style={{ fontVariationSettings: isActive('/tv-games') ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      live_tv
+    </span>
+    {t('common.tvGames')}
+  </Link>
+
+  <Link
+    href="/tournaments"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/tournaments') ? 'active' : ''}`}
+  >
+    <span
+      className="material-symbols-outlined text-base"
+      style={{ fontVariationSettings: isActive('/tournaments') ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      emoji_events
+    </span>
+    {t('common.tournaments')}
+  </Link>
+
+  <Link
+    href="/more"
+    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/more') ? 'active' : ''}`}
+  >
+    <span
+      className="material-symbols-outlined text-base"
+      style={{ fontVariationSettings: isActive('/more') ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      more_horiz
+    </span>
+    {t('common.more')}
+  </Link>
+</nav>
+
+
       {/* Click outside to close menus */}
       {(showUserMenu || showMobileMenu) && (
         <div

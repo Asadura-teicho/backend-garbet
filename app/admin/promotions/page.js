@@ -531,6 +531,8 @@ const navItems = [
           )}
         </div>
       </main>
+    </div>
+    </div>
 
       {/* Add/Edit Modal */}
       {(showAddModal || showEditModal) && (

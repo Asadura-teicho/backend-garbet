@@ -400,13 +400,11 @@ function KYCManagement() {
           </div>
         </main>
       </div>
-    </div>
+    </AdminProtectedRoute>
   )
 }
 
-export default function KYCManagementPage() {
-  return (
-    <AdminProtectedRoute>
+export default KYCManagement
       <KYCManagement />
     </AdminProtectedRoute>
   )

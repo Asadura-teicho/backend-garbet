@@ -589,7 +589,7 @@ function DepositsPage() {
           </div>
         </div>
       )}
-        </div>
+      </div>
       </main>
     </div>
     </AdminProtectedRoute>

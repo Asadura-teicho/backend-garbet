@@ -82,13 +82,13 @@ export default function HomePage() {
               <div className="px-4 sm:px-6 lg:px-8 py-6">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
                   {paymentMethods.map((method, index) => (
-                    <div key={index} className="flex flex-col items-center gap-2 p-3 rounded-md bg-[#1f1d37] border border-white/10 hover-lift card-entrance transition-all" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div key={index} className="flex flex-col items-center gap-2 p-3 rounded-md bg-[#1f1d37] border border-white/10">
                       <img alt={`${method.name} logo`} className="h-8" src={method.logo} />
                       <p className="text-white/70 text-xs">{t('home.minDeposit')}</p>
                       <p className="text-white font-bold text-sm">{method.min}</p>
                       <button 
                         onClick={() => router.push('/deposit')}
-                        className="w-full rounded h-7 bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-all hover-lift button-press"
+                        className="w-full rounded h-7 bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors"
                       >
                         {t('home.depositNow')}
                       </button>
@@ -101,11 +101,11 @@ export default function HomePage() {
               <div className="px-4 sm:px-6 lg:px-8 py-6">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                   {gameProviders.map((provider, index) => (
-                    <div key={index} className="flex flex-col items-center gap-3 p-4 rounded-md bg-[#1f1d37] border border-white/10 hover-lift card-entrance transition-all" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div key={index} className="flex flex-col items-center gap-3 p-4 rounded-md bg-[#1f1d37] border border-white/10">
                       <img alt={`${provider.name} Logo`} className="h-12" src={provider.logo} />
                       <button 
                         onClick={() => router.push(`/slots?provider=${encodeURIComponent(provider.name)}`)}
-                        className="w-full rounded h-7 bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-all hover-lift button-press"
+                        className="w-full rounded h-7 bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-colors"
                       >
                         {t('home.goToGames')}
                       </button>
@@ -131,7 +131,7 @@ export default function HomePage() {
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={() => router.push('/sports')}
-                        className="bg-green-500 rounded-md px-4 py-2 text-white font-bold text-sm hover:bg-green-600 transition-all hover-lift button-press"
+                        className="bg-green-500 rounded-md px-4 py-2 text-white font-bold text-sm hover:bg-green-600"
                       >
                         {t('home.playNowButton')}
                       </button>
@@ -142,19 +142,19 @@ export default function HomePage() {
                     <div className="flex gap-2">
                       <button 
                         onClick={() => router.push('/sports')}
-                          className="bg-gray-800 text-white px-8 py-2 rounded-md text-sm hover:bg-gray-700 transition-all hover-lift button-press"
+                        className="bg-gray-800 text-white px-8 py-2 rounded-md text-sm hover:bg-gray-700 transition-colors"
                       >
                         1 <span className="font-bold ml-2">1.55</span>
                       </button>
                       <button 
                         onClick={() => router.push('/sports')}
-                          className="bg-gray-800 text-white px-8 py-2 rounded-md text-sm hover:bg-gray-700 transition-all hover-lift button-press"
+                        className="bg-gray-800 text-white px-8 py-2 rounded-md text-sm hover:bg-gray-700 transition-colors"
                       >
                         X <span className="font-bold ml-2">3.85</span>
                       </button>
                       <button 
                         onClick={() => router.push('/sports')}
-                          className="bg-gray-800 text-white px-8 py-2 rounded-md text-sm hover:bg-gray-700 transition-all hover-lift button-press"
+                        className="bg-gray-800 text-white px-8 py-2 rounded-md text-sm hover:bg-gray-700 transition-colors"
                       >
                         2 <span className="font-bold ml-2">4.83</span>
                       </button>
@@ -280,14 +280,13 @@ export default function HomePage() {
                     return (
                       <div
                         key={index}
-                        className="flex flex-col items-center justify-center p-6 rounded-lg bg-cover bg-center text-center gap-4 hover-lift card-entrance transition-all"
+                        className="flex flex-col items-center justify-center p-6 rounded-lg bg-cover bg-center text-center gap-4"
                         style={{
-                          backgroundImage: `linear-gradient(rgba(21, 19, 40, 0.7), rgba(21, 19, 40, 0.7)), url("${category.image}")`,
-                          animationDelay: `${index * 0.1}s`
+                          backgroundImage: `linear-gradient(rgba(21, 19, 40, 0.7), rgba(21, 19, 40, 0.7)), url("${category.image}")`
                         }}
                       >
                         <h2 className="text-white text-xl font-bold">{getCategoryTitle(category.title)}</h2>
-                        <Link href={getCategoryLink(category.title)} className="bg-white/90 text-black text-sm font-bold px-5 py-2 rounded-md hover:bg-white transition-all hover-lift button-press">{t('home.playNowButton')}</Link>
+                        <Link href={getCategoryLink(category.title)} className="bg-white/90 text-black text-sm font-bold px-5 py-2 rounded-md hover:bg-white">{t('home.playNowButton')}</Link>
                       </div>
                     )
                   })}
@@ -304,8 +303,7 @@ export default function HomePage() {
                         <div 
                           key={index} 
                           onClick={() => router.push('/slots')}
-                          className="flex flex-col rounded-lg bg-surface-dark shadow-[0_4px_15px_rgba(0,0,0,0.2)] w-[140px] sm:w-[160px] md:w-[180px] lg:w-[200px] flex-shrink-0 group overflow-hidden cursor-pointer hover:scale-105 transition-all hover-lift card-entrance"
-                          style={{ animationDelay: `${index * 0.05}s` }}
+                          className="flex flex-col rounded-lg bg-surface-dark shadow-[0_4px_15px_rgba(0,0,0,0.2)] w-[140px] sm:w-[160px] md:w-[180px] lg:w-[200px] flex-shrink-0 group overflow-hidden cursor-pointer hover:scale-105 transition-transform"
                         >
                           <img alt={`Game art ${index + 1}`} className="w-full aspect-[4/3] object-cover" src={game} />
                         </div>

@@ -460,7 +460,9 @@ const navItems = [
                             <button 
                               onClick={() => {
                                 // Open bet actions menu (view details, edit, etc.)
-                                console.log('Bet actions menu:', bet._id)
+                                if (process.env.NODE_ENV === 'development') {
+                                  console.log('Bet actions menu:', bet._id)
+                                }
                                 // TODO: Implement dropdown menu or modal
                               }}
                               className="text-zinc-500 dark:text-[#9cb5ba] hover:text-[#0dccf2] dark:hover:text-[#0dccf2] transition-colors"

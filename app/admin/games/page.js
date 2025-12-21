@@ -61,7 +61,6 @@ function GameManagement() {
   const [showDiceCreateModal, setShowDiceCreateModal] = useState(false)
   const [showDiceWinnerModal, setShowDiceWinnerModal] = useState(false)
   const [showDiceOutcomeModal, setShowDiceOutcomeModal] = useState(false)
-  const [showDicePvPWinnerModal, setShowDicePvPWinnerModal] = useState(false)
   
   // Form data
   const [formData, setFormData] = useState({
@@ -677,7 +676,6 @@ const navItems = [
                   <thead className="bg-white/5">
                     <tr>
                       <th className="px-6 py-4 text-left text-white font-medium">Game #</th>
-                      <th className="px-6 py-4 text-left text-white font-medium">Type</th>
                       <th className="px-6 py-4 text-left text-white font-medium">Status</th>
                       <th className="px-6 py-4 text-left text-white font-medium">Player 1</th>
                       <th className="px-6 py-4 text-left text-white font-medium">Player 2</th>
@@ -688,87 +686,40 @@ const navItems = [
                   </thead>
                   <tbody className="divide-y divide-white/10">
                     {diceGames.map((game) => {
-                      const isPvP = game.gameType === 'player-vs-player'
-                      
-                      // For betting games
-                      const player1Bets = game.player1TotalBets || game.options?.player1?.betCount || 0
-                      const player1Amount = game.player1TotalAmount || game.options?.player1?.totalBetAmount || 0
-                      const player2Bets = game.player2TotalBets || game.options?.player2?.betCount || 0
-                      const player2Amount = game.player2TotalAmount || game.options?.player2?.totalBetAmount || 0
-                      
-                      // For PvP games
-                      const pvpPlayer1 = game.players?.player1
-                      const pvpPlayer2 = game.players?.player2
-                      const pvpPlayer1Roll = pvpPlayer1?.diceRoll
-                      const pvpPlayer2Roll = pvpPlayer2?.diceRoll
-                      const pvpTotalPot = (pvpPlayer1?.betAmount || 0) + (pvpPlayer2?.betAmount || 0)
-                      
-                      const totalAmount = isPvP ? pvpTotalPot : (game.totalBetAmount || 0)
-                      const profitIfP1 = isPvP ? (pvpTotalPot - (pvpPlayer1?.betAmount || 0)) : (totalAmount - (player1Amount * 2))
-                      const profitIfP2 = isPvP ? (pvpTotalPot - (pvpPlayer2?.betAmount || 0)) : (totalAmount - (player2Amount * 2))
+                      const player1Bets = game.player1TotalBets || 0
+                      const player1Amount = game.player1TotalAmount || 0
+                      const player2Bets = game.player2TotalBets || 0
+                      const player2Amount = game.player2TotalAmount || 0
+                      const totalAmount = game.totalBetAmount || 0
+                      const profitIfP1 = totalAmount - (player1Amount * 2)
+                      const profitIfP2 = totalAmount - (player2Amount * 2)
                       const recommended = profitIfP1 > profitIfP2 ? 'player1' : 'player2'
                       
                       return (
                         <tr key={game._id} className="hover:bg-white/5 transition-colors">
                           <td className="px-6 py-4 text-white font-bold">#{game.gameNumber}</td>
                           <td className="px-6 py-4">
-                            <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                              isPvP ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'
-                            }`}>
-                              {isPvP ? 'PvP' : 'Betting'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getDiceStatusColor(game.status)}`}>
                               {game.status}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-white text-sm">
-                            {isPvP ? (
-                              <div>
-                                <div className="font-semibold">{pvpPlayer1?.username || 'Player 1'}</div>
-                                <div className="text-white/60">₺{(pvpPlayer1?.betAmount || 0).toFixed(2)}</div>
-                                {pvpPlayer1Roll && <div className="text-[#0dccf2] text-xs">Roll: {pvpPlayer1Roll}</div>}
-                              </div>
-                            ) : (
-                              <>
-                                <div>{player1Bets} bets</div>
-                                <div className="text-white/60">₺{player1Amount.toFixed(2)}</div>
-                              </>
-                            )}
+                            <div>{player1Bets} bets</div>
+                            <div className="text-white/60">₺{player1Amount.toFixed(2)}</div>
                           </td>
                           <td className="px-6 py-4 text-white text-sm">
-                            {isPvP ? (
-                              <div>
-                                <div className="font-semibold">{pvpPlayer2?.username || 'Player 2'}</div>
-                                <div className="text-white/60">₺{(pvpPlayer2?.betAmount || 0).toFixed(2)}</div>
-                                {pvpPlayer2Roll && <div className="text-purple-400 text-xs">Roll: {pvpPlayer2Roll}</div>}
-                              </div>
-                            ) : (
-                              <>
-                                <div>{player2Bets} bets</div>
-                                <div className="text-white/60">₺{player2Amount.toFixed(2)}</div>
-                              </>
-                            )}
+                            <div>{player2Bets} bets</div>
+                            <div className="text-white/60">₺{player2Amount.toFixed(2)}</div>
                           </td>
                           <td className="px-6 py-4 text-white text-sm">
-                            {isPvP ? (
-                              <div>
-                                <span className="text-white/60">Pot: </span>
-                                <span className="font-bold">₺{totalAmount.toFixed(2)}</span>
-                              </div>
-                            ) : (
-                              <>
-                                {game.totalBets || 0} bets<br />
-                                <span className="text-white/60">₺{totalAmount.toFixed(2)}</span>
-                              </>
-                            )}
+                            {game.totalBets || 0} bets<br />
+                            <span className="text-white/60">₺{totalAmount.toFixed(2)}</span>
                           </td>
                           <td className="px-6 py-4">
-                            {game.selectedWinner ? (
+                            {game.winner ? (
                               <span className="text-white font-semibold">
-                                {game.selectedWinner === 'player1' ? (isPvP ? (pvpPlayer1?.username || 'Player 1') : 'Player 1') : (isPvP ? (pvpPlayer2?.username || 'Player 2') : 'Player 2')}
-                                {game.diceResult && ` (${game.diceResult})`}
+                                {game.winner === 'player1' ? 'Player 1' : 'Player 2'}
+                                {game.winningRoll && ` (${game.winningRoll})`}
                               </span>
                             ) : (
                               <div className="text-xs">
@@ -779,56 +730,31 @@ const navItems = [
                             )}
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {isPvP ? (
-                                // PvP game actions
-                                <>
-                                  {game.status === 'in-progress' && !game.selectedWinner && (
-                                    <button
-                                      onClick={() => openDicePvPWinnerModal(game)}
-                                      className="px-3 py-1 text-green-400 hover:bg-white/10 rounded text-sm transition-colors"
-                                    >
-                                      Select Winner
-                                    </button>
-                                  )}
-                                  {game.status === 'completed' && (
-                                    <button
-                                      onClick={() => openDiceChangeModal(game)}
-                                      className="px-3 py-1 text-blue-400 hover:bg-white/10 rounded text-sm transition-colors"
-                                    >
-                                      Change
-                                    </button>
-                                  )}
-                                </>
-                              ) : (
-                                // Betting game actions
-                                <>
-                                  {game.status === 'accepting-bets' && (
-                                    <button
-                                      onClick={() => handleDiceCloseGame(game._id)}
-                                      className="px-3 py-1 text-yellow-400 hover:bg-white/10 rounded text-sm transition-colors"
-                                      disabled={diceSaving}
-                                    >
-                                      Close
-                                    </button>
-                                  )}
-                                  {(game.status === 'closed' || game.status === 'accepting-bets') && !game.selectedWinner && (
-                                    <button
-                                      onClick={() => openDiceWinnerModal(game)}
-                                      className="px-3 py-1 text-green-400 hover:bg-white/10 rounded text-sm transition-colors"
-                                    >
-                                      Select Winner
-                                    </button>
-                                  )}
-                                  {game.status === 'completed' && (
-                                    <button
-                                      onClick={() => openDiceChangeModal(game)}
-                                      className="px-3 py-1 text-blue-400 hover:bg-white/10 rounded text-sm transition-colors"
-                                    >
-                                      Change
-                                    </button>
-                                  )}
-                                </>
+                            <div className="flex items-center gap-2">
+                              {game.status === 'accepting-bets' && (
+                                <button
+                                  onClick={() => handleDiceCloseGame(game._id)}
+                                  className="px-3 py-1 text-yellow-400 hover:bg-white/10 rounded text-sm transition-colors"
+                                  disabled={diceSaving}
+                                >
+                                  Close
+                                </button>
+                              )}
+                              {(game.status === 'closed' || game.status === 'accepting-bets') && !game.winner && (
+                                <button
+                                  onClick={() => openDiceWinnerModal(game)}
+                                  className="px-3 py-1 text-green-400 hover:bg-white/10 rounded text-sm transition-colors"
+                                >
+                                  Select Winner
+                                </button>
+                              )}
+                              {game.status === 'completed' && (
+                                <button
+                                  onClick={() => openDiceChangeModal(game)}
+                                  className="px-3 py-1 text-blue-400 hover:bg-white/10 rounded text-sm transition-colors"
+                                >
+                                  Change
+                                </button>
                               )}
                             </div>
                           </td>
@@ -1161,93 +1087,6 @@ const navItems = [
                     setShowDiceWinnerModal(false)
                     setDiceWinnerForm({ winner: '', diceResult: '', adminSetResult: '' })
                     setSelectedDiceGame(null)
-                  }}
-                  className="px-4 py-2 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Dice Game PvP Winner Modal */}
-      {showDicePvPWinnerModal && selectedDiceGame && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#1E1E2B] rounded-xl p-6 max-w-md w-full mx-4 border border-white/10 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-white text-xl font-bold mb-4">Select PvP Winner - Game #{selectedDiceGame.gameNumber}</h3>
-            
-            <div className="mb-4 p-4 bg-white/5 rounded-lg">
-              <p className="text-white/70 text-sm mb-2">Players:</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-white/60">Player 1 ({selectedDiceGame.players?.player1?.username || 'Player 1'}):</span>
-                  <span className="text-white">₺{(selectedDiceGame.players?.player1?.betAmount || 0).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-white/60">Player 2 ({selectedDiceGame.players?.player2?.username || 'Player 2'}):</span>
-                  <span className="text-white">₺{(selectedDiceGame.players?.player2?.betAmount || 0).toFixed(2)}</span>
-                </div>
-                <div className="mt-2 pt-2 border-t border-white/10">
-                  <div className="flex justify-between">
-                    <span className="text-white/60">Total Pot:</span>
-                    <span className="text-[#0dccf2] font-bold">₺{((selectedDiceGame.players?.player1?.betAmount || 0) + (selectedDiceGame.players?.player2?.betAmount || 0)).toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-white/70 text-sm mb-2">Winner *</label>
-                <select
-                  value={dicePvPWinnerForm.winner}
-                  onChange={(e) => setDicePvPWinnerForm({...dicePvPWinnerForm, winner: e.target.value})}
-                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
-                >
-                  <option value="">Select winner</option>
-                  <option value="player1">Player 1 ({selectedDiceGame.players?.player1?.username || 'Player 1'})</option>
-                  <option value="player2">Player 2 ({selectedDiceGame.players?.player2?.username || 'Player 2'})</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-white/70 text-sm mb-2">Player 1 Dice Roll (1-6, optional)</label>
-                <input
-                  type="number"
-                  value={dicePvPWinnerForm.player1Roll}
-                  onChange={(e) => setDicePvPWinnerForm({...dicePvPWinnerForm, player1Roll: e.target.value})}
-                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
-                  min="1"
-                  max="6"
-                  placeholder="Leave empty to use current roll"
-                />
-              </div>
-              <div>
-                <label className="block text-white/70 text-sm mb-2">Player 2 Dice Roll (1-6, optional)</label>
-                <input
-                  type="number"
-                  value={dicePvPWinnerForm.player2Roll}
-                  onChange={(e) => setDicePvPWinnerForm({...dicePvPWinnerForm, player2Roll: e.target.value})}
-                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
-                  min="1"
-                  max="6"
-                  placeholder="Leave empty to use current roll"
-                />
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleDiceSelectPvPWinner}
-                  disabled={diceSaving || !dicePvPWinnerForm.winner}
-                  className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {diceSaving ? 'Processing...' : 'Select Winner'}
-                </button>
-                <button
-                  onClick={() => {
-                    setShowDicePvPWinnerModal(false)
-                    setSelectedDiceGame(null)
-                    setDicePvPWinnerForm({ winner: '', player1Roll: '', player2Roll: '' })
                   }}
                   className="px-4 py-2 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors"
                 >

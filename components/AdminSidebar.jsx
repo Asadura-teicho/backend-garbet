@@ -57,17 +57,16 @@ export default function AdminSidebar() {
       </div>
 
       <nav className="flex flex-col gap-2">
-        {navItems.map((item, index) => (
+        {navItems.map(item => (
           <Link
             key={item.id}
             href={item.href}
             onClick={() => setIsMobileOpen(false)}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover-lift animate-fade-in ${
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
               pathname === item.href || (item.id === 'dashboard' && pathname === '/admin')
                 ? 'bg-primary/20 text-primary'
                 : 'text-gray-300 hover:bg-white/10'
             }`}
-            style={{ animationDelay: `${index * 0.05}s` }}
           >
             <span className="material-symbols-outlined">{item.icon}</span>
             <p>{item.label}</p>

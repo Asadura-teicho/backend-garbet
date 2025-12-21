@@ -78,7 +78,9 @@ function KYCManagement() {
       setTotal(filtered.length)
       setTotalPages(Math.ceil(filtered.length / itemsPerPage))
     } catch (err) {
-      console.error("KYC load error:", err)
+       if (process.env.NODE_ENV === 'development') {
+         console.error("KYC load error:", err)
+       }
       setError(err.response?.data?.message || 'Failed to load KYC data')
       setData([])
       log.apiError('/admin/kyc', err)
@@ -396,16 +398,12 @@ function KYCManagement() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        </main>
-      </div>
-    </AdminProtectedRoute>
-  )
-}
-
-export default KYCManagement
-      <KYCManagement />
-    </AdminProtectedRoute>
-  )
-}
+             </div>
+           </div>
+         </main>
+       </div>
+     </AdminProtectedRoute>
+   )
+ }
+ 
+ export default KYCManagement

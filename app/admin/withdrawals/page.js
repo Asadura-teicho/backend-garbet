@@ -740,7 +740,7 @@ function WithdrawalsPage() {
           </div>
         </div>
       )}
-      </div>
+        </div>
       </main>
     </div>
     </AdminProtectedRoute>

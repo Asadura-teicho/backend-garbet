@@ -52,9 +52,6 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
-  
-  // Production optimizations
-  productionBrowserSourceMaps: false, // Disable source maps in production for security
 }
 
 module.exports = nextConfig

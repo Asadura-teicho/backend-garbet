@@ -822,7 +822,7 @@ function PlayModeComponent({ balance, matchmakingStatus, setMatchmakingStatus, s
         return
       }
 
-      const response = await diceRollGameAPI.joinQueue(parseFloat(betAmount))
+      const response = await diceRollGameAPI.joinQueue({ betAmount: parseFloat(betAmount) })
       const data = response.data?.data || response.data
       
       if (data.matched && data.game) {
@@ -959,18 +959,18 @@ function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetch
         // Refresh user data to get updated balance
         await fetchUserData()
       }
-    } catch (err) {
-      // Ignore errors
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error refreshing game:', err)
-      }
-    } finally {
+        } catch (err) {
+          // Ignore errors silently in production
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error refreshing game:', err)
+          }
+        } finally {
       setRefreshing(false)
     }
   }
 
   useEffect(() => {
-    if (game.status === 'in-progress' && !showRollAnimation) {
+    if (game.status === 'in-progress') {
       const interval = setInterval(() => {
         refreshGame()
       }, 2000) // Refresh every 2 seconds for better real-time updates
@@ -980,7 +980,7 @@ function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetch
       refreshGame()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game.status, game._id, showRollAnimation]) // Include showRollAnimation to prevent refresh during animation
+  }, [game.status, game._id]) // Include game._id to reset when game changes
 
   const rollDice = async () => {
     setRolling(true)

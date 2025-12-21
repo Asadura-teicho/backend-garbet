@@ -17,11 +17,9 @@ export default function DiceAnimation({ value, isRolling = false, size = 'large'
         clearInterval(interval)
         setIsAnimating(false)
       }
-    } else {
+    } else if (value) {
       setIsAnimating(false)
-      if (value !== null && value !== undefined && value >= 1 && value <= 6) {
-        setDisplayValue(value)
-      }
+      setDisplayValue(value)
     }
   }, [isRolling, value])
 

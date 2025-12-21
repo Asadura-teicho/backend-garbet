@@ -628,9 +628,6 @@ const navItems = [
           </div>
         </div>
       )}
-          </div>
-        </main>
-      </div>
     </AdminProtectedRoute>
   )
 }

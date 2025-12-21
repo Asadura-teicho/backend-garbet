@@ -50,7 +50,6 @@ export default function StatisticsPage() {
         if (process.env.NODE_ENV === 'development') {
           console.error('Error loading statistics:', error)
         }
-        }
         // Fallback to mock data on error
         setStats(mockStatistics)
       } finally {

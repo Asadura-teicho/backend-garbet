@@ -1,11 +1,14 @@
 {
-  "/admin/deposits/page": "app/admin/deposits/page.js",
-  "/admin/withdrawals/page": "app/admin/withdrawals/page.js",
-  "/admin/tournaments/page": "app/admin/tournaments/page.js",
-  "/admin/content/page": "app/admin/content/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/auth/login/page": "app/auth/login/page.js",
-  "/admin/promotions/page": "app/admin/promotions/page.js",
-  "/admin/kyc/page": "app/admin/kyc/page.js",
-  "/admin/logout/page": "app/admin/logout/page.js"
+  "/promotions/page": "app/promotions/page.js",
+  "/tv-games/page": "app/tv-games/page.js",
+  "/more/page": "app/more/page.js",
+  "/dice-roll/page": "app/dice-roll/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/live-betting/page": "app/live-betting/page.js",
+  "/sports/page": "app/sports/page.js",
+  "/slots/page": "app/slots/page.js",
+  "/live-casino/page": "app/live-casino/page.js",
+  "/crash/page": "app/crash/page.js",
+  "/tournaments/page": "app/tournaments/page.js",
+  "/not-found": "app/not-found.js"
 }

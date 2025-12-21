@@ -216,7 +216,7 @@ function AdminDashboard() {
       <AdminSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark ml-64">
+      <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark ml-0 lg:ml-64 pt-16 lg:pt-0">
         {/* TopNavBar */}
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-surface bg-background-dark/80 px-4 sm:px-6 lg:px-8 backdrop-blur-sm">
           <div className="flex items-center gap-8">

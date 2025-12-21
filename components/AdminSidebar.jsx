@@ -1,13 +1,14 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslation } from '@/hooks/useTranslation'
-import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function AdminSidebar() {
   const { t } = useTranslation()
   const pathname = usePathname()
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const navItems = [
     { id: 'dashboard', label: t('admin.dashboard'), icon: 'dashboard', href: '/admin' },
@@ -23,7 +24,28 @@ export default function AdminSidebar() {
   ]
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col bg-background-dark border-r border-surface p-4 z-50">
+    <>
+      {/* Mobile Hamburger Button */}
+      <button
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-background-dark border border-surface rounded-lg text-white hover:bg-white/10 transition-colors"
+        aria-label="Toggle sidebar"
+      >
+        <span className="material-symbols-outlined">{isMobileOpen ? 'close' : 'menu'}</span>
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-[55]"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed left-0 top-0 h-screen w-64 flex flex-col bg-background-dark border-r border-surface p-4 z-50 transition-transform duration-300 ${
+        isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
       <div className="flex items-center gap-3 mb-8 px-2">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
           <span className="material-symbols-outlined text-black">casino</span>
@@ -35,15 +57,17 @@ export default function AdminSidebar() {
       </div>
 
       <nav className="flex flex-col gap-2">
-        {navItems.map(item => (
+        {navItems.map((item, index) => (
           <Link
             key={item.id}
             href={item.href}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+            onClick={() => setIsMobileOpen(false)}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all hover-lift animate-fade-in ${
               pathname === item.href || (item.id === 'dashboard' && pathname === '/admin')
                 ? 'bg-primary/20 text-primary'
                 : 'text-gray-300 hover:bg-white/10'
             }`}
+            style={{ animationDelay: `${index * 0.05}s` }}
           >
             <span className="material-symbols-outlined">{item.icon}</span>
             <p>{item.label}</p>
@@ -52,11 +76,9 @@ export default function AdminSidebar() {
       </nav>
 
       <div className="mt-auto">
-        <div className="mb-2 px-3">
-          <LanguageSwitcher />
-        </div>
         <Link
           href="/admin/settings"
+          onClick={() => setIsMobileOpen(false)}
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-white/10 transition-colors"
         >
           <span className="material-symbols-outlined">settings</span>
@@ -65,7 +87,11 @@ export default function AdminSidebar() {
 
         <button
           onClick={() => {
-            window.location.href = '/admin/logout'
+            localStorage.removeItem('token')
+            localStorage.removeItem('user')
+            localStorage.removeItem('isAdmin')
+            localStorage.removeItem('adminEmail')
+            window.location.href = '/auth/login'
           }}
           className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-red-500/20 hover:text-red-400 transition-colors"
         >
@@ -74,6 +100,7 @@ export default function AdminSidebar() {
         </button>
       </div>
     </aside>
+    </>
   )
 }
 

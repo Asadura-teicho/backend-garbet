@@ -251,7 +251,7 @@ function DashboardPage() {
             <p className="text-gray-400 text-sm text-center">No active bonuses</p>
             <Link
               href="/bonuses"
-              className="mt-4 w-full flex items-center justify-center rounded-lg h-11 px-5 bg-[#3e3e47] text-white text-sm font-bold hover:bg-[#4a4a55] transition-colors"
+              className="mt-4 w-full flex items-center justify-center rounded-lg h-11 px-5 bg-[#3e3e47] text-white text-sm font-bold hover:bg-[#4a4a55] transition-all hover-lift button-press"
             >
               <span className="truncate">{t('dashboard.seeAllBonuses')}</span>
             </Link>
@@ -323,7 +323,7 @@ function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-background-light dark:bg-background-dark font-display text-[#EAEAEA]">
       {/* SideNavBar - Fixed */}
-      <aside className="fixed left-0 top-0 h-screen w-64 flex-col bg-background-dark border-r border-surface hidden lg:flex z-50">
+      <aside className="fixed left-0 top-0 h-screen w-64 flex-col bg-background-dark border-r border-surface hidden lg:flex z-40">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-surface">
           <div className="size-8 text-primary">
             <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -381,57 +381,8 @@ function DashboardPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col ml-0 lg:ml-64">
-        {/* TopNavBar */}
-        <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-surface px-4 sm:px-6 py-3">
-          <div className="flex items-center gap-4 text-white">
-            <button className="lg:hidden p-2 -ml-2">
-              <span className="material-symbols-outlined">menu</span>
-            </button>
-            <div className="hidden items-center gap-4 text-white lg:flex">
-              <div className="size-5 text-primary">
-                <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                  <g clipPath="url(#clip1_6_319)">
-                    <path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"></path>
-                  </g>
-                  <defs>
-                    <clipPath id="clip1_6_319">
-                      <rect fill="white" height="48" width="48"></rect>
-                    </clipPath>
-                  </defs>
-                </svg>
-              </div>
-              <Link href="/">
-                <h2 className="text-white text-lg font-bold">Garbet</h2>
-              </Link>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="hidden sm:flex flex-col items-end">
-              <span className="text-xs text-gray-400">{t('common.balance')}</span>
-              <span className="font-bold text-white">₺{user?.balance?.toFixed(2) || '0.00'}</span>
-            </div>
-            <Link href="/deposit" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-background-dark text-sm font-bold shadow-md hover:brightness-110 transition-all">
-              <span className="truncate">{t('common.deposit')}</span>
-            </Link>
-            <button 
-              onClick={() => {
-                // TODO: Open notifications modal or navigate to notifications page
-                console.log('Notifications clicked')
-              }}
-              className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-surface text-white gap-2 text-sm font-bold min-w-0 px-2.5 hover:bg-surface/80 transition-colors"
-            >
-              <span className="material-symbols-outlined">notifications</span>
-            </button>
-            {/* Language Switcher */}
-            <div className="hidden sm:block">
-              <LanguageSwitcher />
-            </div>
-            <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 hidden sm:block" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD_Dqon_1r08olFx9dGrieAk2FkxXdxlY_aVC96bO-COx1kf4TE6RT2zvFYTnBerRh1dbUvqTXwacCTwfYwr9-WG58W72qmIaKv93ik0_SJ55IN2zR7sobveE-fk2ed44m2aPMMlvJMYVo31_fjYj3LzQtjA4lNHc5CyAhMwXIVoX-cHiZst3G6McMDdtmWY47YTEfIPeW_C5DNSH4R7JuaHK1bRHd5M8TnxjBz5ceOS5BWyKZFaxCEIodf2NJmbeWYKvZQE-d4j1c")' }}></div>
-          </div>
-        </header>
-
         {/* Main Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pt-20 lg:pt-6">
           <div className="flex flex-col gap-8">
             {/* PageHeading */}
             <div className="flex flex-wrap justify-between gap-3">
@@ -451,10 +402,10 @@ function DashboardPage() {
                   <p className="text-white text-4xl font-bold tracking-tight mb-2">₺{user?.balance?.toFixed(2) || '0.00'}</p>
                   <p className="text-gray-300 text-base font-normal mb-6">{t('dashboard.cashBalance')}: ₺{((user?.balance || 0) - (user?.bonusBalance || 0)).toFixed(2)} | {t('dashboard.bonusBalance')}: ₺{user?.bonusBalance?.toFixed(2) || '0.00'}</p>
                   <div className="flex flex-wrap gap-3">
-                    <Link href="/deposit" className="flex flex-1 sm:flex-none min-w-[120px] items-center justify-center rounded-lg h-12 px-5 bg-primary text-background-dark text-base font-bold shadow-md hover:brightness-110 transition-all">
+                    <Link href="/deposit" className="flex flex-1 sm:flex-none min-w-[120px] items-center justify-center rounded-lg h-12 px-5 bg-primary text-background-dark text-base font-bold shadow-md hover:brightness-110 transition-all hover-lift button-press">
                       <span className="truncate">{t('common.deposit')}</span>
                     </Link>
-                    <Link href="/withdraw" className="flex flex-1 sm:flex-none min-w-[120px] items-center justify-center rounded-lg h-12 px-5 bg-[#3e3e47] text-white text-base font-bold hover:bg-[#4a4a55] transition-colors">
+                    <Link href="/withdraw" className="flex flex-1 sm:flex-none min-w-[120px] items-center justify-center rounded-lg h-12 px-5 bg-[#3e3e47] text-white text-base font-bold hover:bg-[#4a4a55] transition-all hover-lift button-press">
                       <span className="truncate">{t('common.withdraw')}</span>
                     </Link>
                   </div>
@@ -571,7 +522,7 @@ function DashboardPage() {
                     </div>
                     <Link 
                       href="/slots" 
-                      className="w-full mt-2 flex items-center justify-center rounded-lg h-11 px-5 bg-[#3e3e47] text-white text-sm font-bold hover:bg-[#4a4a55] transition-colors"
+                      className="w-full mt-2 flex items-center justify-center rounded-lg h-11 px-5 bg-[#3e3e47] text-white text-sm font-bold hover:bg-[#4a4a55] transition-all hover-lift button-press"
                     >
                       <span className="truncate">View Game History</span>
                     </Link>

@@ -10,6 +10,8 @@ import { useTranslation } from '@/hooks/useTranslation'
    🔒 MOVE GAMES OUTSIDE COMPONENT
 --------------------------------*/
 const games = [
+  // Dice Roll Game - Featured
+  { id: 'dice-roll', name: 'Dice Roll', provider: 'Garbet Games', category: 'popular', isDiceRoll: true, image: 'https://images.unsplash.com/photo-1580234811455-a3007d79b79b?w=300&h=400&fit=crop' },
   // (YOUR FULL GAMES ARRAY — UNCHANGED)
   { id: 1, name: 'Gates of Olympus', provider: 'Pragmatic Play', category: 'popular', jackpot: true, image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=400&fit=crop' },
   { id: 2, name: 'Sweet Bonanza', provider: 'Pragmatic Play', category: 'popular', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop' },
@@ -219,18 +221,32 @@ export default function SlotsPage() {
                       JACKPOT
                     </div>
                   )}
+                  {game.isDiceRoll && (
+                    <div className="absolute top-2 left-2 bg-[#0dccf2] text-black text-xs font-bold px-2 py-1 rounded">
+                      NEW
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        // TODO: Launch game or navigate to game page
-                        console.log('Play game:', game.name)
-                        // Example: router.push(`/games/${game.id}`)
-                      }}
-                      className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
-                    >
-                      PLAY
-                    </button>
+                    {game.isDiceRoll ? (
+                      <Link
+                        href="/dice-roll"
+                        className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
+                      >
+                        PLAY
+                      </Link>
+                    ) : (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          // TODO: Launch game or navigate to game page
+                          console.log('Play game:', game.name)
+                          // Example: router.push(`/games/${game.id}`)
+                        }}
+                        className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
+                      >
+                        PLAY
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="p-3">

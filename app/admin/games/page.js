@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import AdminProtectedRoute from '@/components/AdminProtectedRoute'
-import { adminAPI } from '@/lib/api'
+import AdminSidebar from '@/components/AdminSidebar'
+import { adminAPI, diceRollGameAPI } from '@/lib/api'
 import { formatDate } from '@/utils/formatters'
 import { log } from '@/utils/logger'
 
@@ -15,6 +16,30 @@ function GameManagement() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  
+  // Tab state
+  const [activeTab, setActiveTab] = useState('catalog') // 'catalog' or 'dice'
+  
+  // Dice games state
+  const [diceGames, setDiceGames] = useState([])
+  const [diceLoading, setDiceLoading] = useState(false)
+  const [diceSaving, setDiceSaving] = useState(false)
+  const [selectedDiceGame, setSelectedDiceGame] = useState(null)
+  
+  // Dice game forms
+  const [diceCreateForm, setDiceCreateForm] = useState({
+    player1Name: 'Player 1',
+    player2Name: 'Player 2',
+    payoutMultiplier: '2.0'
+  })
+  const [diceWinnerForm, setDiceWinnerForm] = useState({
+    winner: '',
+    diceResult: ''
+  })
+  const [diceOutcomeForm, setDiceOutcomeForm] = useState({
+    newWinner: '',
+    newDiceResult: ''
+  })
   
   // Filters
   const [searchQuery, setSearchQuery] = useState('')
@@ -31,6 +56,12 @@ function GameManagement() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedGame, setSelectedGame] = useState(null)
   const [providers, setProviders] = useState([])
+  
+  // Dice game modals
+  const [showDiceCreateModal, setShowDiceCreateModal] = useState(false)
+  const [showDiceWinnerModal, setShowDiceWinnerModal] = useState(false)
+  const [showDiceOutcomeModal, setShowDiceOutcomeModal] = useState(false)
+  const [showDicePvPWinnerModal, setShowDicePvPWinnerModal] = useState(false)
   
   // Form data
   const [formData, setFormData] = useState({
@@ -65,9 +96,173 @@ const navItems = [
 ]
 
   useEffect(() => {
-    fetchGames()
-    fetchProviders()
-  }, [gameTypeFilter, providerFilter, statusFilter, searchQuery, currentPage])
+    if (activeTab === 'catalog') {
+      fetchGames()
+      fetchProviders()
+    } else if (activeTab === 'dice') {
+      fetchDiceGames()
+    }
+  }, [gameTypeFilter, providerFilter, statusFilter, searchQuery, currentPage, activeTab])
+
+  // Fetch dice games
+  const fetchDiceGames = async () => {
+    setDiceLoading(true)
+    setError('')
+    try {
+      const response = await diceRollGameAPI.getAllGames({ limit: 50 })
+      const responseData = response.data
+      if (responseData?.success && responseData?.data) {
+        setDiceGames(responseData.data.games || [])
+      } else if (responseData?.games) {
+        setDiceGames(responseData.games || [])
+      } else {
+        setDiceGames([])
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load dice games')
+      log.apiError('/dice-roll-games', err)
+      setDiceGames([])
+    } finally {
+      setDiceLoading(false)
+    }
+  }
+
+  // Refresh dice games every 10 seconds
+  useEffect(() => {
+    if (activeTab === 'dice') {
+      const interval = setInterval(fetchDiceGames, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [activeTab])
+
+  // Dice game handlers
+  const handleDiceCreateGame = async () => {
+    setDiceSaving(true)
+    setError('')
+    try {
+      await diceRollGameAPI.createGame({
+        player1Name: diceCreateForm.player1Name,
+        player2Name: diceCreateForm.player2Name,
+        payoutMultiplier: parseFloat(diceCreateForm.payoutMultiplier)
+      })
+      setSuccess('Dice game created successfully')
+      setShowDiceCreateModal(false)
+      setDiceCreateForm({ player1Name: 'Player 1', player2Name: 'Player 2', payoutMultiplier: '2.0' })
+      setTimeout(() => {
+        fetchDiceGames()
+      }, 500)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create dice game')
+    } finally {
+      setDiceSaving(false)
+    }
+  }
+
+  const handleDiceCloseGame = async (gameId) => {
+    if (!confirm('Close this game? No more bets will be accepted.')) return
+    setDiceSaving(true)
+    setError('')
+    try {
+      await diceRollGameAPI.closeGame(gameId)
+      setSuccess('Game closed successfully')
+      fetchDiceGames()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to close game')
+    } finally {
+      setDiceSaving(false)
+    }
+  }
+
+  const openDiceWinnerModal = async (game) => {
+    const details = await fetchGameDetails(game._id)
+    if (details) {
+      setSelectedDiceGame(details.game || details)
+      const stats = details.betStats || {}
+      setDiceWinnerForm({
+        winner: '',
+        diceResult: '',
+        adminSetResult: ''
+      })
+      setShowDiceWinnerModal(true)
+    }
+  }
+
+  const handleDiceSelectWinner = async () => {
+    if (!selectedDiceGame || !diceWinnerForm.winner || !diceWinnerForm.diceResult) {
+      setError('Please select winner and dice result')
+      return
+    }
+    setDiceSaving(true)
+    setError('')
+    try {
+      await diceRollGameAPI.selectWinner(selectedDiceGame._id, {
+        winner: diceWinnerForm.winner,
+        winningRoll: parseInt(diceWinnerForm.diceResult)
+      })
+      setSuccess('Winner selected successfully')
+      setShowDiceWinnerModal(false)
+      setSelectedDiceGame(null)
+      fetchDiceGames()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to select winner')
+    } finally {
+      setDiceSaving(false)
+    }
+  }
+
+  const openDiceChangeModal = async (game) => {
+    const details = await fetchGameDetails(game._id)
+    if (details) {
+      setSelectedDiceGame(details.game || details)
+      setDiceOutcomeForm({
+        newWinner: game.winner || '',
+        newDiceResult: game.winningRoll?.toString() || ''
+      })
+      setShowDiceOutcomeModal(true)
+    }
+  }
+
+  const handleDiceChangeOutcome = async () => {
+    if (!selectedDiceGame || !diceOutcomeForm.newWinner || !diceOutcomeForm.newDiceResult) {
+      setError('Please select new winner and dice result')
+      return
+    }
+    setDiceSaving(true)
+    setError('')
+    try {
+      await diceRollGameAPI.changeOutcome(selectedDiceGame._id, {
+        newWinner: diceOutcomeForm.newWinner,
+        newWinningRoll: parseInt(diceOutcomeForm.newDiceResult)
+      })
+      setSuccess('Outcome changed successfully')
+      setShowDiceOutcomeModal(false)
+      setSelectedDiceGame(null)
+      fetchDiceGames()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to change outcome')
+    } finally {
+      setDiceSaving(false)
+    }
+  }
+
+  const fetchGameDetails = async (gameId) => {
+    try {
+      const response = await diceRollGameAPI.getGame(gameId)
+      return response.data?.data || response.data
+    } catch (err) {
+      log.apiError('/dice-roll-games/:id', err)
+      return null
+    }
+  }
+
+  const getDiceStatusColor = (status) => {
+    switch (status) {
+      case 'accepting-bets': return 'bg-green-500/20 text-green-400'
+      case 'closed': return 'bg-yellow-500/20 text-yellow-400'
+      case 'completed': return 'bg-blue-500/20 text-blue-400'
+      default: return 'bg-gray-500/20 text-gray-400'
+    }
+  }
 
   const fetchGames = async () => {
     setLoading(true)
@@ -231,124 +426,59 @@ const navItems = [
 
   return (
     <div className="flex min-h-screen w-full bg-background-dark">
-   <div className="flex bg-background-dark min-h-screen">
-  {/* FIXED SIDEBAR */}
-  <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col bg-background-dark border-r border-surface p-4 z-50">
-    <div className="flex items-center gap-3 mb-8 px-2">
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-        <span className="material-symbols-outlined text-black">casino</span>
-      </div>
-      <div className="flex flex-col">
-        <h1 className="text-base font-bold text-white">Casino Admin</h1>
-        <p className="text-sm text-gray-400">Management</p>
-      </div>
-    </div>
-
-    <nav className="flex flex-col gap-2">
-      {navItems.map(item => (
-        <Link
-          key={item.id}
-          href={item.href}
-          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-            pathname === item.href || (item.id === 'dashboard' && pathname === '/admin')
-              ? 'bg-primary/20 text-primary'
-              : 'text-gray-300 hover:bg-white/10'
-          }`}
-        >
-          <span className="material-symbols-outlined">{item.icon}</span>
-          <p>{item.label}</p>
-        </Link>
-      ))}
-    </nav>
-
-    <div className="mt-auto">
-      <Link
-        href="/admin/settings"
-        className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-white/10 transition-colors"
-      >
-        <span className="material-symbols-outlined">settings</span>
-        <p className="text-sm font-medium">Settings</p>
-      </Link>
-
-      <button
-        onClick={() => {
-          localStorage.removeItem('token')
-          localStorage.removeItem('user')
-          localStorage.removeItem('isAdmin')
-          localStorage.removeItem('adminEmail')
-          window.location.href = '/auth/login'
-        }}
-        className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-red-500/20 hover:text-red-400 transition-colors"
-      >
-        <span className="material-symbols-outlined">logout</span>
-        <p className="text-sm font-medium">Logout</p>
-      </button>
-
-      <div className="mt-4 flex items-center gap-3 border-t border-white/10 pt-4">
-        <div
-          className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-          style={{
-            backgroundImage:
-              'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeBaCCsTptl1trq-7t7S9yHg2U-j1m_3eQJ6dpRP-IZjxZIDKL6U_iFBKUwWt18HwxovSG8ldqiQCa7NbmEcelTnHQGSwTeQORHSMYn7gGZDs-U982dOqo8QbAOQy7uCWkHjlHxe0m_eXtY2xDHYQYW3KAKuLgW2ZrQlV3yrUSs8tMyu4QaShzTzhohnzpDGQllaTrkdAQoFvcjS9zzhmKAnFrldqCRC16_VfbZD7OYbVjNJOiQ4Gz2-oKSG6XZ4azP4qWoBeSO74")'
-          }}
-        />
-        <div className="flex flex-col">
-          <h2 className="text-sm font-medium text-white">
-            {typeof window !== 'undefined'
-              ? (() => {
-                  try {
-                    const userStr = localStorage.getItem('user')
-                    if (userStr) {
-                      const user = JSON.parse(userStr)
-                      return `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Admin User'
-                    }
-                  } catch {}
-                  return 'Admin User'
-                })()
-              : 'Admin User'}
-          </h2>
-          <p className="text-xs text-gray-400">
-            {typeof window !== 'undefined'
-              ? (() => {
-                  try {
-                    const userStr = localStorage.getItem('user')
-                    if (userStr) {
-                      const user = JSON.parse(userStr)
-                      return user.email || 'admin@casino.com'
-                    }
-                  } catch {}
-                  return localStorage.getItem('adminEmail') || 'admin@casino.com'
-                })()
-              : 'admin@casino.com'}
-          </p>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  {/* MAIN CONTENT */}
-  <main className="ml-64 flex-1 min-h-screen">
-    {/* Your existing topbar */}
-    {/* Your existing dashboard content */}
-  </main>
-</div>
-
-
-      <main className="flex-1 p-6 lg:p-10 bg-background-light dark:bg-background-dark overflow-y-auto">
+      <AdminSidebar />
+      <main className="flex-1 p-6 lg:p-10 bg-background-light dark:bg-background-dark overflow-y-auto ml-0 lg:ml-64 pt-16 lg:pt-0">
         <div className="layout-content-container flex flex-col w-full max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-between gap-3 mb-6">
             <p className="text-black dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
               Game Management
             </p>
+            {activeTab === 'catalog' ? (
+              <button
+                onClick={() => {
+                  resetForm()
+                  setShowAddModal(true)
+                }}
+                className="px-4 py-2 rounded-lg bg-[#0dccf2] text-white font-medium hover:bg-[#0bb5d9] transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined">add</span>
+                Add Game
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setDiceCreateForm({ player1Name: 'Player 1', player2Name: 'Player 2', payoutMultiplier: '2.0' })
+                  setShowDiceCreateModal(true)
+                }}
+                className="px-4 py-2 rounded-lg bg-[#0dccf2] text-white font-medium hover:bg-[#0bb5d9] transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined">add</span>
+                Create Dice Game
+              </button>
+            )}
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mb-6 border-b border-white/10">
             <button
-              onClick={() => {
-                resetForm()
-                setShowAddModal(true)
-              }}
-              className="px-4 py-2 rounded-lg bg-[#0dccf2] text-white font-medium hover:bg-[#0bb5d9] transition-colors flex items-center gap-2"
+              onClick={() => setActiveTab('catalog')}
+              className={`px-4 py-2 font-medium transition-colors ${
+                activeTab === 'catalog'
+                  ? 'text-[#0dccf2] border-b-2 border-[#0dccf2]'
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
-              <span className="material-symbols-outlined">add</span>
-              Add Game
+              Game Catalog
+            </button>
+            <button
+              onClick={() => setActiveTab('dice')}
+              className={`px-4 py-2 font-medium transition-colors ${
+                activeTab === 'dice'
+                  ? 'text-[#0dccf2] border-b-2 border-[#0dccf2]'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Dice Roll Games
             </button>
           </div>
 
@@ -426,7 +556,8 @@ const navItems = [
             </div>
           </div>
 
-          {/* Games Table */}
+          {/* Games Table - Catalog */}
+          {activeTab === 'catalog' && (
           <div className="bg-[#1E1E2B]/50 dark:bg-black/20 rounded-xl border border-white/10 overflow-hidden">
             {loading ? (
               <div className="flex items-center justify-center py-12">
@@ -527,6 +658,189 @@ const navItems = [
               </div>
             )}
           </div>
+          )}
+
+          {/* Dice Games Table */}
+          {activeTab === 'dice' && (
+          <div className="bg-[#1E1E2B]/50 dark:bg-black/20 rounded-xl border border-white/10 overflow-hidden">
+            {diceLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="size-8 animate-spin rounded-full border-4 border-[#0dccf2] border-t-transparent"></div>
+              </div>
+            ) : diceGames.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-400">No dice games found</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-white/5">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-white font-medium">Game #</th>
+                      <th className="px-6 py-4 text-left text-white font-medium">Type</th>
+                      <th className="px-6 py-4 text-left text-white font-medium">Status</th>
+                      <th className="px-6 py-4 text-left text-white font-medium">Player 1</th>
+                      <th className="px-6 py-4 text-left text-white font-medium">Player 2</th>
+                      <th className="px-6 py-4 text-left text-white font-medium">Total Bets</th>
+                      <th className="px-6 py-4 text-left text-white font-medium">Winner</th>
+                      <th className="px-6 py-4 text-left text-white font-medium">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10">
+                    {diceGames.map((game) => {
+                      const isPvP = game.gameType === 'player-vs-player'
+                      
+                      // For betting games
+                      const player1Bets = game.player1TotalBets || game.options?.player1?.betCount || 0
+                      const player1Amount = game.player1TotalAmount || game.options?.player1?.totalBetAmount || 0
+                      const player2Bets = game.player2TotalBets || game.options?.player2?.betCount || 0
+                      const player2Amount = game.player2TotalAmount || game.options?.player2?.totalBetAmount || 0
+                      
+                      // For PvP games
+                      const pvpPlayer1 = game.players?.player1
+                      const pvpPlayer2 = game.players?.player2
+                      const pvpPlayer1Roll = pvpPlayer1?.diceRoll
+                      const pvpPlayer2Roll = pvpPlayer2?.diceRoll
+                      const pvpTotalPot = (pvpPlayer1?.betAmount || 0) + (pvpPlayer2?.betAmount || 0)
+                      
+                      const totalAmount = isPvP ? pvpTotalPot : (game.totalBetAmount || 0)
+                      const profitIfP1 = isPvP ? (pvpTotalPot - (pvpPlayer1?.betAmount || 0)) : (totalAmount - (player1Amount * 2))
+                      const profitIfP2 = isPvP ? (pvpTotalPot - (pvpPlayer2?.betAmount || 0)) : (totalAmount - (player2Amount * 2))
+                      const recommended = profitIfP1 > profitIfP2 ? 'player1' : 'player2'
+                      
+                      return (
+                        <tr key={game._id} className="hover:bg-white/5 transition-colors">
+                          <td className="px-6 py-4 text-white font-bold">#{game.gameNumber}</td>
+                          <td className="px-6 py-4">
+                            <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                              isPvP ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'
+                            }`}>
+                              {isPvP ? 'PvP' : 'Betting'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getDiceStatusColor(game.status)}`}>
+                              {game.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-white text-sm">
+                            {isPvP ? (
+                              <div>
+                                <div className="font-semibold">{pvpPlayer1?.username || 'Player 1'}</div>
+                                <div className="text-white/60">₺{(pvpPlayer1?.betAmount || 0).toFixed(2)}</div>
+                                {pvpPlayer1Roll && <div className="text-[#0dccf2] text-xs">Roll: {pvpPlayer1Roll}</div>}
+                              </div>
+                            ) : (
+                              <>
+                                <div>{player1Bets} bets</div>
+                                <div className="text-white/60">₺{player1Amount.toFixed(2)}</div>
+                              </>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-white text-sm">
+                            {isPvP ? (
+                              <div>
+                                <div className="font-semibold">{pvpPlayer2?.username || 'Player 2'}</div>
+                                <div className="text-white/60">₺{(pvpPlayer2?.betAmount || 0).toFixed(2)}</div>
+                                {pvpPlayer2Roll && <div className="text-purple-400 text-xs">Roll: {pvpPlayer2Roll}</div>}
+                              </div>
+                            ) : (
+                              <>
+                                <div>{player2Bets} bets</div>
+                                <div className="text-white/60">₺{player2Amount.toFixed(2)}</div>
+                              </>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-white text-sm">
+                            {isPvP ? (
+                              <div>
+                                <span className="text-white/60">Pot: </span>
+                                <span className="font-bold">₺{totalAmount.toFixed(2)}</span>
+                              </div>
+                            ) : (
+                              <>
+                                {game.totalBets || 0} bets<br />
+                                <span className="text-white/60">₺{totalAmount.toFixed(2)}</span>
+                              </>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            {game.selectedWinner ? (
+                              <span className="text-white font-semibold">
+                                {game.selectedWinner === 'player1' ? (isPvP ? (pvpPlayer1?.username || 'Player 1') : 'Player 1') : (isPvP ? (pvpPlayer2?.username || 'Player 2') : 'Player 2')}
+                                {game.diceResult && ` (${game.diceResult})`}
+                              </span>
+                            ) : (
+                              <div className="text-xs">
+                                <div className="text-white/60">P1: <span className={profitIfP1 >= 0 ? 'text-green-400' : 'text-red-400'}>₺{profitIfP1.toFixed(2)}</span></div>
+                                <div className="text-white/60">P2: <span className={profitIfP2 >= 0 ? 'text-green-400' : 'text-red-400'}>₺{profitIfP2.toFixed(2)}</span></div>
+                                <div className="text-[#0dccf2] mt-1 font-semibold">→ {recommended}</div>
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {isPvP ? (
+                                // PvP game actions
+                                <>
+                                  {game.status === 'in-progress' && !game.selectedWinner && (
+                                    <button
+                                      onClick={() => openDicePvPWinnerModal(game)}
+                                      className="px-3 py-1 text-green-400 hover:bg-white/10 rounded text-sm transition-colors"
+                                    >
+                                      Select Winner
+                                    </button>
+                                  )}
+                                  {game.status === 'completed' && (
+                                    <button
+                                      onClick={() => openDiceChangeModal(game)}
+                                      className="px-3 py-1 text-blue-400 hover:bg-white/10 rounded text-sm transition-colors"
+                                    >
+                                      Change
+                                    </button>
+                                  )}
+                                </>
+                              ) : (
+                                // Betting game actions
+                                <>
+                                  {game.status === 'accepting-bets' && (
+                                    <button
+                                      onClick={() => handleDiceCloseGame(game._id)}
+                                      className="px-3 py-1 text-yellow-400 hover:bg-white/10 rounded text-sm transition-colors"
+                                      disabled={diceSaving}
+                                    >
+                                      Close
+                                    </button>
+                                  )}
+                                  {(game.status === 'closed' || game.status === 'accepting-bets') && !game.selectedWinner && (
+                                    <button
+                                      onClick={() => openDiceWinnerModal(game)}
+                                      className="px-3 py-1 text-green-400 hover:bg-white/10 rounded text-sm transition-colors"
+                                    >
+                                      Select Winner
+                                    </button>
+                                  )}
+                                  {game.status === 'completed' && (
+                                    <button
+                                      onClick={() => openDiceChangeModal(game)}
+                                      className="px-3 py-1 text-blue-400 hover:bg-white/10 rounded text-sm transition-colors"
+                                    >
+                                      Change
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+          )}
         </div>
       </main>
 
@@ -725,6 +1039,276 @@ const navItems = [
               >
                 Cancel
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dice Game Create Modal */}
+      {showDiceCreateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[#1E1E2B] rounded-xl p-6 max-w-md w-full mx-4 border border-white/10">
+            <h3 className="text-white text-xl font-bold mb-4">Create New Dice Game</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Player 1 Name</label>
+                <input
+                  type="text"
+                  value={diceCreateForm.player1Name}
+                  onChange={(e) => setDiceCreateForm({...diceCreateForm, player1Name: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Player 2 Name</label>
+                <input
+                  type="text"
+                  value={diceCreateForm.player2Name}
+                  onChange={(e) => setDiceCreateForm({...diceCreateForm, player2Name: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Payout Multiplier</label>
+                <input
+                  type="number"
+                  value={diceCreateForm.payoutMultiplier}
+                  onChange={(e) => setDiceCreateForm({...diceCreateForm, payoutMultiplier: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                  min="1"
+                  step="0.1"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDiceCreateGame}
+                  disabled={diceSaving}
+                  className="flex-1 px-4 py-2 bg-[#0dccf2] text-black rounded-lg font-bold hover:bg-[#0dccf2]/90 transition-colors disabled:opacity-50"
+                >
+                  {diceSaving ? 'Creating...' : 'Create'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDiceCreateModal(false)
+                    setDiceCreateForm({ player1Name: 'Player 1', player2Name: 'Player 2', payoutMultiplier: '2.0' })
+                  }}
+                  className="px-4 py-2 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dice Game Select Winner Modal */}
+      {showDiceWinnerModal && selectedDiceGame && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[#1E1E2B] rounded-xl p-6 max-w-md w-full mx-4 border border-white/10 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-white text-xl font-bold mb-4">Select Winner - Game #{selectedDiceGame.gameNumber}</h3>
+            
+            {selectedDiceGame.betStats && (
+              <div className="mb-4 p-4 bg-white/5 rounded-lg">
+                <p className="text-white/70 text-sm mb-2">Bet Distribution:</p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Player 1:</span>
+                    <span className="text-white">{selectedDiceGame.betStats.player1?.totalBets || 0} bets - ₺{(selectedDiceGame.betStats.player1?.totalAmount || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Player 2:</span>
+                    <span className="text-white">{selectedDiceGame.betStats.player2?.totalBets || 0} bets - ₺{(selectedDiceGame.betStats.player2?.totalAmount || 0).toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Winner *</label>
+                <select
+                  value={diceWinnerForm.winner}
+                  onChange={(e) => setDiceWinnerForm({...diceWinnerForm, winner: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                >
+                  <option value="">Select winner</option>
+                  <option value="player1">Player 1</option>
+                  <option value="player2">Player 2</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Dice Result (1-6) *</label>
+                <input
+                  type="number"
+                  value={diceWinnerForm.diceResult}
+                  onChange={(e) => setDiceWinnerForm({...diceWinnerForm, diceResult: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                  min="1"
+                  max="6"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDiceSelectWinner}
+                  disabled={diceSaving || !diceWinnerForm.winner || !diceWinnerForm.diceResult}
+                  className="flex-1 px-4 py-2 bg-[#0dccf2] text-black rounded-lg font-bold hover:bg-[#0dccf2]/90 transition-colors disabled:opacity-50"
+                >
+                  {diceSaving ? 'Processing...' : 'Select Winner'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDiceWinnerModal(false)
+                    setDiceWinnerForm({ winner: '', diceResult: '', adminSetResult: '' })
+                    setSelectedDiceGame(null)
+                  }}
+                  className="px-4 py-2 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dice Game PvP Winner Modal */}
+      {showDicePvPWinnerModal && selectedDiceGame && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[#1E1E2B] rounded-xl p-6 max-w-md w-full mx-4 border border-white/10 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-white text-xl font-bold mb-4">Select PvP Winner - Game #{selectedDiceGame.gameNumber}</h3>
+            
+            <div className="mb-4 p-4 bg-white/5 rounded-lg">
+              <p className="text-white/70 text-sm mb-2">Players:</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-white/60">Player 1 ({selectedDiceGame.players?.player1?.username || 'Player 1'}):</span>
+                  <span className="text-white">₺{(selectedDiceGame.players?.player1?.betAmount || 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/60">Player 2 ({selectedDiceGame.players?.player2?.username || 'Player 2'}):</span>
+                  <span className="text-white">₺{(selectedDiceGame.players?.player2?.betAmount || 0).toFixed(2)}</span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-white/10">
+                  <div className="flex justify-between">
+                    <span className="text-white/60">Total Pot:</span>
+                    <span className="text-[#0dccf2] font-bold">₺{((selectedDiceGame.players?.player1?.betAmount || 0) + (selectedDiceGame.players?.player2?.betAmount || 0)).toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Winner *</label>
+                <select
+                  value={dicePvPWinnerForm.winner}
+                  onChange={(e) => setDicePvPWinnerForm({...dicePvPWinnerForm, winner: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                >
+                  <option value="">Select winner</option>
+                  <option value="player1">Player 1 ({selectedDiceGame.players?.player1?.username || 'Player 1'})</option>
+                  <option value="player2">Player 2 ({selectedDiceGame.players?.player2?.username || 'Player 2'})</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Player 1 Dice Roll (1-6, optional)</label>
+                <input
+                  type="number"
+                  value={dicePvPWinnerForm.player1Roll}
+                  onChange={(e) => setDicePvPWinnerForm({...dicePvPWinnerForm, player1Roll: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                  min="1"
+                  max="6"
+                  placeholder="Leave empty to use current roll"
+                />
+              </div>
+              <div>
+                <label className="block text-white/70 text-sm mb-2">Player 2 Dice Roll (1-6, optional)</label>
+                <input
+                  type="number"
+                  value={dicePvPWinnerForm.player2Roll}
+                  onChange={(e) => setDicePvPWinnerForm({...dicePvPWinnerForm, player2Roll: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                  min="1"
+                  max="6"
+                  placeholder="Leave empty to use current roll"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDiceSelectPvPWinner}
+                  disabled={diceSaving || !dicePvPWinnerForm.winner}
+                  className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {diceSaving ? 'Processing...' : 'Select Winner'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDicePvPWinnerModal(false)
+                    setSelectedDiceGame(null)
+                    setDicePvPWinnerForm({ winner: '', player1Roll: '', player2Roll: '' })
+                  }}
+                  className="px-4 py-2 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dice Game Change Outcome Modal */}
+      {showDiceOutcomeModal && selectedDiceGame && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[#1E1E2B] rounded-xl p-6 max-w-md w-full mx-4 border border-white/10">
+            <h3 className="text-white text-xl font-bold mb-4">Change Outcome - Game #{selectedDiceGame.gameNumber}</h3>
+            <p className="text-red-400 text-sm mb-4">⚠️ This will reverse previous payouts and process new ones!</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-white/70 text-sm mb-2">New Winner *</label>
+                <select
+                  value={diceOutcomeForm.newWinner}
+                  onChange={(e) => setDiceOutcomeForm({...diceOutcomeForm, newWinner: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                >
+                  <option value="">Select new winner</option>
+                  <option value="player1">Player 1</option>
+                  <option value="player2">Player 2</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-white/70 text-sm mb-2">New Dice Result (1-6) *</label>
+                <input
+                  type="number"
+                  value={diceOutcomeForm.newDiceResult}
+                  onChange={(e) => setDiceOutcomeForm({...diceOutcomeForm, newDiceResult: e.target.value})}
+                  className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
+                  min="1"
+                  max="6"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDiceChangeOutcome}
+                  disabled={diceSaving || !diceOutcomeForm.newWinner || !diceOutcomeForm.newDiceResult}
+                  className="flex-1 px-4 py-2 bg-[#0dccf2] text-black rounded-lg font-bold hover:bg-[#0dccf2]/90 transition-colors disabled:opacity-50"
+                >
+                  {diceSaving ? 'Processing...' : 'Change Outcome'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDiceOutcomeModal(false)
+                    setDiceOutcomeForm({ newWinner: '', newDiceResult: '' })
+                    setSelectedDiceGame(null)
+                  }}
+                  className="px-4 py-2 bg-white/5 text-white rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>

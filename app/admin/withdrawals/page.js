@@ -206,12 +206,13 @@ function WithdrawalsPage() {
   })
 
   return (
-    <div className="flex min-h-screen w-full bg-background-dark">
-      {/* Sidebar */}
-      <AdminSidebar />
+    <AdminProtectedRoute>
+      <div className="flex min-h-screen w-full bg-background-dark">
+        {/* Sidebar */}
+        <AdminSidebar />
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 lg:p-10 bg-background-light dark:bg-background-dark ml-64">
+        {/* Main Content */}
+        <main className="flex-1 p-6 lg:p-10 bg-background-light dark:bg-background-dark ml-0 lg:ml-64">
         <div className="flex flex-col w-full max-w-7xl mx-auto">
           {/* PageHeading */}
           <div className="flex flex-wrap justify-between gap-3 mb-6">
@@ -739,15 +740,12 @@ function WithdrawalsPage() {
           </div>
         </div>
       )}
+        </div>
+      </main>
     </div>
-  )
-}
-
-export default function WithdrawalsPageWrapper() {
-  return (
-    <AdminProtectedRoute>
-      <WithdrawalsPage />
     </AdminProtectedRoute>
   )
 }
+
+export default WithdrawalsPage
 

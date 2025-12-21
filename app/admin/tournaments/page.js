@@ -804,7 +804,7 @@ function TournamentManagement() {
     <div className="flex min-h-screen w-full bg-background-dark">
       <AdminSidebar />
 
-      <main className="flex-1 p-6 lg:p-10 ml-64">
+      <main className="flex-1 p-6 lg:p-10 ml-0 lg:ml-64 pt-16 lg:pt-0">
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
 
           <div className="flex justify-between items-start">

@@ -248,14 +248,14 @@ const navItems = [
   </aside>
 
   {/* MAIN CONTENT */}
-  <main className="ml-64 flex-1 min-h-screen">
+  <main className="ml-0 lg:ml-64 flex-1 min-h-screen pt-16 lg:pt-0">
     {/* Your existing topbar */}
     {/* Your existing dashboard content */}
   </main>
 </div>
 
   {/* MAIN CONTENT */}
-  <main className="ml-64 flex-1 min-h-screen">
+  <main className="ml-0 lg:ml-64 flex-1 min-h-screen pt-16 lg:pt-0">
     {/* Your existing topbar */}
     {/* Your existing dashboard content */}
   </main>

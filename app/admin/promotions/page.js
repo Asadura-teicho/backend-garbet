@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import AdminProtectedRoute from '@/components/AdminProtectedRoute'
+import AdminSidebar from '@/components/AdminSidebar'
 import { adminAPI } from '@/lib/api'
 import { formatDate } from '@/utils/formatters'
 import { log } from '@/utils/logger'
@@ -341,16 +342,7 @@ const navItems = [
     </div>
   </aside>
 
-  {/* MAIN CONTENT */}
-  <main className="ml-64 flex-1 min-h-screen">
-    {/* Your existing topbar */}
-    {/* Your existing dashboard content */}
-  </main>
-</div>
-
-
-      {/* Main Content */}
-      <main className="flex-1 p-8">
+          <div className="w-full max-w-7xl mx-auto">
         <div className="flex flex-col gap-6">
           {/* PageHeading */}
           <div className="flex flex-wrap justify-between items-center gap-4">

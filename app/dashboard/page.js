@@ -77,7 +77,7 @@ function DashboardPage() {
         }
       } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-          console.error('Error loading dashboard data:', error)
+        console.error('Error loading dashboard data:', error)
         }
         // Set defaults on error
         setUser({ balance: 0, bonusBalance: 0 })
@@ -356,7 +356,7 @@ function DashboardPage() {
                     setActiveMenu(item.label)
                     // Ensure navigation works
                     if (process.env.NODE_ENV === 'development') {
-                      console.log('Navigating to:', item.href)
+                    console.log('Navigating to:', item.href)
                     }
                   }}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors cursor-pointer ${
@@ -419,7 +419,7 @@ function DashboardPage() {
               onClick={() => {
                 // TODO: Open notifications modal or navigate to notifications page
                 if (process.env.NODE_ENV === 'development') {
-                  console.log('Notifications clicked')
+                console.log('Notifications clicked')
                 }
               }}
               className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-surface text-white gap-2 text-sm font-bold min-w-0 px-2.5 hover:bg-surface/80 transition-colors"

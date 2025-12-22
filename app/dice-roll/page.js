@@ -1049,7 +1049,7 @@ function PlayModeComponent({ balance, matchmakingStatus, setMatchmakingStatus, s
               min="1"
               step="0.01"
             />
-            <p className="text-white/50 text-xs mt-1">You'll be matched with a player with a similar bet amount</p>
+            <p className="text-white/50 text-xs mt-1">You&apos;ll be matched with a player with a similar bet amount</p>
           </div>
           <button
             onClick={joinQueue}

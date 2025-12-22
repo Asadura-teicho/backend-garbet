@@ -68,7 +68,7 @@ const fetchUsers = async () => {
       console.error("API Error Details:", err.response);
       // ONLY use mock data if you really want to, otherwise show the real error
       setError(err.response?.data?.message || 'Failed to fetch users from server.');
-      setUsers([]); // Clear users so you don't see fake data
+      setUsers([]); // Clear users so you dont see fake data
     } finally {
       setLoading(false);
     }

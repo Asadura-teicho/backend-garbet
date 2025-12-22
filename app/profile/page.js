@@ -488,7 +488,7 @@ function ProfilePage() {
           window.location.href = '/auth/login'
           return
         }
-        // Don't show error if we have fallback data
+        // dont show error if we have fallback data
         const userStr = localStorage.getItem('user')
         if (userStr) {
           try {

@@ -121,7 +121,7 @@ function DashboardPage() {
         setUser(mockUser || {})
         setRecentTransactions((mockTransactions || []).slice(0, 5))
         setActiveBonuses((mockBonuses || []).filter(b => b && b.status === 'active'))
-        // Don't redirect if using mock data
+        // dont redirect if using mock data
         // if (err.response?.status === 401) {
         //   router.push('/auth/login')
         // }

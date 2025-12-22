@@ -222,7 +222,7 @@
     "passwordPlaceholder": "Enter your password",
     "forgotPassword": "Forgot Password?",
     "createAccount": "Create an account",
-    "dontHaveAccount": "Don't have an account?",
+    "dontHaveAccount": "dont have an account?",
     "welcomeBack": "Welcome Back"
   },
   "register": {
@@ -331,7 +331,7 @@
     "createRequest": "Create Withdrawal Request",
     "processing": "Processing...",
     "withdrawalHistory": "Withdrawal History",
-    "noWithdrawals": "You don't have any withdrawal requests yet",
+    "noWithdrawals": "You dont have any withdrawal requests yet",
     "rejectionReason": "Rejection Reason",
     "note": "Note",
     "status": {

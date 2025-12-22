@@ -1,7 +1,1 @@
-{
-  "/deposit/page": "app/deposit/page.js",
-  "/slots/page": "app/slots/page.js",
-  "/dice-roll/page": "app/dice-roll/page.js",
-  "/admin/games/page": "app/admin/games/page.js",
-  "/promotions/page": "app/promotions/page.js"
-}
+{}

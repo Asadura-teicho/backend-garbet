@@ -60,7 +60,7 @@ function DiceRollPage() {
   }, [])
 
   const checkForActiveGame = async () => {
-    // Don't check if user just ended a session
+    // dont check if user just ended a session
     if (gameSessionEnded) return
     
     try {
@@ -69,7 +69,7 @@ function DiceRollPage() {
       
       // Only set game if it exists, is matched, and is NOT completed or waiting-for-admin
       if (data.matched && data.game && data.game.status !== 'completed' && data.game.status !== 'waiting-for-admin') {
-        // Only set if we don't already have a game or if it's a different game
+        // Only set if we dont already have a game or if it's a different game
         if (!myGame || myGame._id !== data.game._id) {
           setMyGame(data.game)
           setGameMode('play') // Set to play mode if game found
@@ -77,7 +77,7 @@ function DiceRollPage() {
           await fetchUserData()
         }
       } else if (data.matched && data.game && (data.game.status === 'completed' || data.game.status === 'waiting-for-admin')) {
-        // If game is completed or waiting for admin, don't auto-restore it
+        // If game is completed or waiting for admin, dont auto-restore it
         // Only clear if it's the same game and we're not in a session-ended state
         if (myGame && myGame._id === data.game._id && !gameSessionEnded) {
           setMyGame(null)

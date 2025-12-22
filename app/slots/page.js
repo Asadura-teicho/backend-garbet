@@ -13,7 +13,7 @@ const games = [
   // Dice Roll Game - Featured
   { id: 'dice-roll', name: 'Dice Roll', provider: 'Garbet Games', category: 'popular', isDiceRoll: true, image: 'https://media.istockphoto.com/id/525032572/photo/gambling-craps-game.jpg?s=1024x1024&w=is&k=20&c=EIaZAJCR2qvuh2ilrT4b4j4DTreeMbOWvWi7URBcQUA=' },
   // (YOUR FULL GAMES ARRAY — UNCHANGED)
-  { id: 1, name: 'Gates of Olympus', provider: 'Pragmatic Play', category: 'popular', jackpot: true, image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=400&fit=crop' },
+  { id: 1, name: 'Gate of Olympus', provider: 'Pragmatic Play', category: 'popular', jackpot: true, image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=400&fit=crop' },
   { id: 2, name: 'Sweet Bonanza', provider: 'Pragmatic Play', category: 'popular', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop' },
   // ⚠️ KEEP ALL 100 ITEMS EXACTLY AS YOU SENT
 ]

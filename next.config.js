@@ -1,25 +1,29 @@
-import path from 'path';
+const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  poweredByHeader: false,
-  compress: true,
-  swcMinify: true,
-  output: 'standalone',
+  poweredByHeader: false, // Remove "X-Powered-By" header
+  compress: true,         // Enable compression
+  swcMinify: true,        // Minify with SWC
+  output: 'standalone',   // Optimize for standalone deployment
 
+  // Image optimization
   images: {
     domains: ['lh3.googleusercontent.com'],
     formats: ['image/avif', 'image/webp'],
     unoptimized: false,
   },
 
+  // Webpack configuration
   webpack: (config, { isServer }) => {
+    // Alias '@' to project root
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': path.resolve('./'),
+      '@': path.resolve(__dirname),
     };
 
+    // Polyfill Node modules for client-side only
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -32,13 +36,15 @@ const nextConfig = {
     return config;
   },
 
+  // Experimental features
   experimental: {
     optimizeCss: true,
   },
 
+  // Environment variables
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

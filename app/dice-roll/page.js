@@ -29,6 +29,8 @@ function DiceRollPage() {
   const [matchmakingStatus, setMatchmakingStatus] = useState(null)
   const [myGame, setMyGame] = useState(null) // Player vs player game
   const [matchmakingInterval, setMatchmakingInterval] = useState(null)
+  const [pvpGames, setPvpGames] = useState([]) // Active PvP games for betting
+  const [gameSessionEnded, setGameSessionEnded] = useState(false) // Flag to prevent auto-restore after ending session
 
   const quickBetAmounts = ['10', '50', '100', '500', '1000']
 
@@ -44,26 +46,49 @@ function DiceRollPage() {
       if (!placingBet) {
         fetchActiveGame()
       }
-      // Also check for PvP games
-      checkForActiveGame()
+      // Only check for PvP games if session hasn't been ended
+      if (!gameSessionEnded) {
+        checkForActiveGame()
+      }
     }, 3000) // Reduced to 3 seconds for better real-time updates
     setRefreshInterval(interval)
 
     return () => {
       if (interval) clearInterval(interval)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const checkForActiveGame = async () => {
+    // Don't check if user just ended a session
+    if (gameSessionEnded) return
+    
     try {
       const response = await diceRollGameAPI.getMatchmakingStatus()
       const data = response.data?.data || response.data
       
-      if (data.matched && data.game) {
-        setMyGame(data.game)
-        setGameMode('play') // Set to play mode if game found
-        // Refresh user data to get updated balance
-        await fetchUserData()
+      // Only set game if it exists, is matched, and is NOT completed or waiting-for-admin
+      if (data.matched && data.game && data.game.status !== 'completed' && data.game.status !== 'waiting-for-admin') {
+        // Only set if we don't already have a game or if it's a different game
+        if (!myGame || myGame._id !== data.game._id) {
+          setMyGame(data.game)
+          setGameMode('play') // Set to play mode if game found
+          // Refresh user data to get updated balance
+          await fetchUserData()
+        }
+      } else if (data.matched && data.game && (data.game.status === 'completed' || data.game.status === 'waiting-for-admin')) {
+        // If game is completed or waiting for admin, don't auto-restore it
+        // Only clear if it's the same game and we're not in a session-ended state
+        if (myGame && myGame._id === data.game._id && !gameSessionEnded) {
+          setMyGame(null)
+          setGameMode(null)
+        }
+      } else if (!data.matched && !data.inQueue) {
+        // No active game or queue - clear completed games
+        if (myGame && (myGame.status === 'completed' || myGame.status === 'waiting-for-admin') && !gameSessionEnded) {
+          setMyGame(null)
+          setGameMode(null)
+        }
       }
     } catch (err) {
       // Ignore errors
@@ -73,13 +98,28 @@ function DiceRollPage() {
   const fetchUserData = async () => {
     try {
       const response = await authAPI.me()
-      setUser(response.data)
-      setBalance(response.data.balance || 0)
+      if (response?.data) {
+        setUser(response.data)
+        setBalance(response.data.balance || 0)
+        
+        // Update localStorage
+        try {
+          const { updateUserData } = await import('@/utils/auth')
+          updateUserData(response.data)
+        } catch (err) {
+          // Silently fail
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error updating user data:', err)
+          }
+        }
+      }
     } catch (err) {
       if (err.response?.status === 401) {
         router.push('/auth/login')
       } else {
-        log.apiError('/auth/me', err)
+        if (process.env.NODE_ENV === 'development') {
+          log.apiError('/auth/me', err)
+        }
       }
     }
   }
@@ -87,9 +127,10 @@ function DiceRollPage() {
   const fetchActiveGame = async () => {
     try {
       const response = await diceRollGameAPI.getActiveGame()
-      // API returns: { success: true, data: { game, bets, betStats } }
+      // API returns: { success: true, data: { game, bets, betStats, pvpGames } }
       const responseData = response.data
       const gameData = responseData?.data?.game || responseData?.game || null
+      const pvpGamesData = responseData?.data?.pvpGames || []
       
       if (gameData) {
         const betStats = responseData?.data?.betStats || responseData?.betStats
@@ -136,6 +177,9 @@ function DiceRollPage() {
         setLiveBets([])
         setLivePlayers([])
       }
+      
+      // Set PvP games for betting
+      setPvpGames(pvpGamesData)
     } catch (err) {
       // If 404, no active game exists - that's fine
       if (err.response?.status !== 404) {
@@ -144,6 +188,7 @@ function DiceRollPage() {
       setActiveGame(null)
       setLiveBets([])
       setLivePlayers([])
+      setPvpGames([])
     } finally {
       setLoading(false)
     }
@@ -225,6 +270,12 @@ function DiceRollPage() {
         fetchMyBets(),
         fetchUserData()
       ])
+      
+      // If betting on PvP game, reset active game to show betting game again
+      if (activeGame.gameType === 'player-vs-player') {
+        setActiveGame(null)
+        await fetchActiveGame()
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to place bet')
       log.apiError('/dice-roll-bets', err)
@@ -354,6 +405,7 @@ function DiceRollPage() {
                   setError={setError}
                   setSuccess={setSuccess}
                   fetchUserData={fetchUserData}
+                  setGameMode={setGameMode}
                 />
               </div>
             )}
@@ -368,6 +420,10 @@ function DiceRollPage() {
                   setError={setError}
                   setSuccess={setSuccess}
                   fetchUserData={fetchUserData}
+                  setGameMode={setGameMode}
+                  setMatchmakingStatus={setMatchmakingStatus}
+                  authAPI={authAPI}
+                  diceRollGameAPI={diceRollGameAPI}
                 />
               </div>
             )}
@@ -418,7 +474,7 @@ function DiceRollPage() {
                                 ? 'bg-[#0dccf2]/20 border-[#0dccf2]' 
                                 : 'bg-[#1b2527] border-[#3b5054] hover:border-[#0dccf2]/50'
                             }`}
-                            onClick={() => activeGame.status === 'accepting-bets' && setSelectedOption('player1')}
+                            onClick={() => (activeGame.status === 'accepting-bets' || (activeGame.gameType === 'player-vs-player' && activeGame.status === 'in-progress')) && setSelectedOption('player1')}
                           >
                             <div className="flex items-center justify-between mb-3">
                               <h3 className="text-white font-bold text-lg">{activeGame.options?.player1?.name || 'Player 1'}</h3>
@@ -449,7 +505,7 @@ function DiceRollPage() {
                                 ? 'bg-purple-500/20 border-purple-500 shadow-lg shadow-purple-500/30' 
                                 : 'bg-[#1b2527] border-[#3b5054] hover:border-purple-500/50'
                             }`}
-                            onClick={() => activeGame.status === 'accepting-bets' && setSelectedOption('player2')}
+                            onClick={() => (activeGame.status === 'accepting-bets' || (activeGame.gameType === 'player-vs-player' && activeGame.status === 'in-progress')) && setSelectedOption('player2')}
                           >
                             <div className="flex items-center justify-between mb-3">
                               <h3 className="text-white font-bold text-lg flex items-center gap-2">
@@ -478,7 +534,7 @@ function DiceRollPage() {
                         </div>
 
                         {/* Betting Interface */}
-                        {activeGame.status === 'accepting-bets' && (
+                        {(activeGame.status === 'accepting-bets' || (activeGame.gameType === 'player-vs-player' && activeGame.status === 'in-progress')) && (
                           <div className="bg-[#1b2527] rounded-lg p-4 border border-[#3b5054]">
                             <p className="text-white/60 text-sm mb-3">Bet Amount</p>
                             
@@ -567,6 +623,69 @@ function DiceRollPage() {
                     {success && (
                       <div className="bg-green-500/20 border border-green-500/50 rounded-lg p-4">
                         <p className="text-green-400 text-sm">{success}</p>
+                      </div>
+                    )}
+
+                    {/* PvP Matches Section */}
+                    {pvpGames.length > 0 && (
+                      <div className="bg-[#111718] rounded-xl border border-[#3b5054] overflow-hidden">
+                        <div className="bg-[#1b2527] px-6 py-4 border-b border-[#3b5054]">
+                          <h3 className="text-white text-xl font-bold">🎮 Active PvP Matches</h3>
+                          <p className="text-white/60 text-sm mt-1">Bet on live player vs player matches</p>
+                        </div>
+                        <div className="p-6 space-y-4">
+                          {pvpGames.map((pvpGame) => (
+                            <div key={pvpGame._id} className="bg-[#1b2527] rounded-lg border border-[#3b5054] p-4">
+                              <div className="flex items-center justify-between mb-4">
+                                <div>
+                                  <h4 className="text-white font-bold">Game #{pvpGame.gameNumber}</h4>
+                                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold mt-1 ${getStatusColor(pvpGame.status)}`}>
+                                    {pvpGame.status === 'in-progress' ? 'In Progress' : 'Waiting for Admin'}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div className="text-center p-3 bg-[#0dccf2]/10 rounded-lg border border-[#0dccf2]/30">
+                                  <p className="text-white/60 text-xs mb-1">Player 1</p>
+                                  <p className="text-white font-bold">{pvpGame.players.player1.username}</p>
+                                  {pvpGame.players.player1.diceRoll && (
+                                    <p className="text-[#0dccf2] text-sm mt-1">Roll: {pvpGame.players.player1.diceRoll}</p>
+                                  )}
+                                  <p className="text-white/60 text-xs mt-2">
+                                    {pvpGame.betStats?.player1Bets || 0} bets • ₺{(pvpGame.betStats?.player1Total || 0).toFixed(2)}
+                                  </p>
+                                </div>
+                                <div className="text-center p-3 bg-purple-500/10 rounded-lg border border-purple-500/30">
+                                  <p className="text-white/60 text-xs mb-1">Player 2</p>
+                                  <p className="text-white font-bold">{pvpGame.players.player2.username}</p>
+                                  {pvpGame.players.player2.diceRoll && (
+                                    <p className="text-purple-400 text-sm mt-1">Roll: {pvpGame.players.player2.diceRoll}</p>
+                                  )}
+                                  <p className="text-white/60 text-xs mt-2">
+                                    {pvpGame.betStats?.player2Bets || 0} bets • ₺{(pvpGame.betStats?.player2Total || 0).toFixed(2)}
+                                  </p>
+                                </div>
+                              </div>
+                              {pvpGame.status === 'in-progress' && (
+                                <button
+                                  onClick={() => {
+                                    // Set this as active game for betting
+                                    setActiveGame({
+                                      ...pvpGame,
+                                      gameType: 'player-vs-player',
+                                      payoutMultiplier: 2.0
+                                    })
+                                    setSelectedOption(null)
+                                    setBetAmount('')
+                                  }}
+                                  className="w-full px-4 py-2 bg-[#0dccf2] text-black rounded-lg font-bold hover:bg-[#0dccf2]/90 transition-colors"
+                                >
+                                  Bet on This Match
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -784,10 +903,44 @@ function DiceRollPage() {
 }
 
 // Play Mode Component
-function PlayModeComponent({ balance, matchmakingStatus, setMatchmakingStatus, setMyGame, setError, setSuccess, fetchUserData }) {
+function PlayModeComponent({ balance, matchmakingStatus, setMatchmakingStatus, setMyGame, setError, setSuccess, fetchUserData, setGameMode }) {
   const [betAmount, setBetAmount] = useState('')
   const [joining, setJoining] = useState(false)
   const [checkingStatus, setCheckingStatus] = useState(false)
+
+  const checkMatchmakingStatus = async () => {
+    if (checkingStatus) return
+    setCheckingStatus(true)
+    try {
+      const response = await diceRollGameAPI.getMatchmakingStatus()
+      const data = response.data?.data || response.data
+      
+      if (data.matched && data.game) {
+        setMyGame(data.game)
+        if (setGameMode) {
+          setGameMode('play')
+        }
+        await fetchUserData()
+        if (setMatchmakingStatus) {
+          setMatchmakingStatus(null)
+        }
+      } else if (data.inQueue) {
+        if (setMatchmakingStatus) {
+          setMatchmakingStatus(data)
+        }
+      } else {
+        if (setMatchmakingStatus) {
+          setMatchmakingStatus(null)
+        }
+      }
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error checking matchmaking status:', err)
+      }
+    } finally {
+      setCheckingStatus(false)
+    }
+  }
 
   useEffect(() => {
     if (matchmakingStatus?.inQueue) {
@@ -796,6 +949,7 @@ function PlayModeComponent({ balance, matchmakingStatus, setMatchmakingStatus, s
       }, 2000) // Check every 2 seconds
       return () => clearInterval(interval)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchmakingStatus])
 
   const joinQueue = async () => {
@@ -827,13 +981,20 @@ function PlayModeComponent({ balance, matchmakingStatus, setMatchmakingStatus, s
       
       if (data.matched && data.game) {
         setMyGame(data.game)
+        if (setGameMode) {
+          setGameMode('play')
+        }
         setSuccess('Match found!')
         await fetchUserData()
       } else if (data.queue) {
-        setMatchmakingStatus({ inQueue: true, queue: data.queue })
+        if (setMatchmakingStatus) {
+          setMatchmakingStatus({ inQueue: true, queue: data.queue })
+        }
         setSuccess('Searching for opponent...')
       } else {
-        setMatchmakingStatus({ inQueue: true })
+        if (setMatchmakingStatus) {
+          setMatchmakingStatus({ inQueue: true })
+        }
         setSuccess('Searching for opponent...')
       }
     } catch (err) {
@@ -857,29 +1018,6 @@ function PlayModeComponent({ balance, matchmakingStatus, setMatchmakingStatus, s
       }
     } finally {
       setJoining(false)
-    }
-  }
-
-  const checkMatchmakingStatus = async () => {
-    setCheckingStatus(true)
-    try {
-      const response = await diceRollGameAPI.getMatchmakingStatus()
-      const data = response.data?.data || response.data
-      
-      if (data.matched && data.game) {
-        setMyGame(data.game)
-        setMatchmakingStatus(null)
-        setSuccess('Match found!')
-        await fetchUserData()
-      } else if (!data.inQueue) {
-        setMatchmakingStatus(null)
-      } else {
-        setMatchmakingStatus(data)
-      }
-    } catch (err) {
-      // Ignore errors
-    } finally {
-      setCheckingStatus(false)
     }
   }
 
@@ -939,10 +1077,19 @@ function PlayModeComponent({ balance, matchmakingStatus, setMatchmakingStatus, s
 }
 
 // Player vs Player Game Component
-function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetchUserData }) {
+function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetchUserData, setGameMode, setMatchmakingStatus, authAPI, diceRollGameAPI }) {
   const [rolling, setRolling] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [showRollAnimation, setShowRollAnimation] = useState(false)
+  
+  // Reset animation state when game changes
+  useEffect(() => {
+    if (!game || game.status === 'completed') {
+      setShowRollAnimation(false)
+      setRolling(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game?._id, game?.status])
 
   const refreshGame = async () => {
     if (refreshing) return // Prevent multiple simultaneous refreshes
@@ -958,16 +1105,40 @@ function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetch
         setShowRollAnimation(false)
         // Refresh user data to get updated balance
         await fetchUserData()
-      }
-        } catch (err) {
-          // Ignore errors silently in production
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Error refreshing game:', err)
+        // Update localStorage with new balance
+        try {
+          if (authAPI) {
+            const { updateUserData } = await import('@/utils/auth')
+            const userResponse = await authAPI.me()
+            if (userResponse?.data) {
+              updateUserData(userResponse.data)
+            }
           }
-        } finally {
+        } catch (err) {
+          // Silently fail - balance will update on next refresh
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error updating balance in refreshGame:', err)
+          }
+        }
+      }
+    } catch (err) {
+      // Ignore errors silently in production
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error refreshing game:', err)
+      }
+    } finally {
       setRefreshing(false)
     }
   }
+
+  // Reset animation state when game changes or is cleared
+  useEffect(() => {
+    if (!game || game.status === 'completed') {
+      setShowRollAnimation(false)
+      setRolling(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game?._id, game?.status])
 
   useEffect(() => {
     if (game.status === 'in-progress') {
@@ -983,37 +1154,75 @@ function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetch
   }, [game.status, game._id]) // Include game._id to reset when game changes
 
   const rollDice = async () => {
+    if (rolling || showRollAnimation) return // Prevent double clicks
+    
     setRolling(true)
     setShowRollAnimation(true)
     setError('')
+    setSuccess('')
     
-    // Show animation for 2 seconds before making API call
-    setTimeout(async () => {
-      try {
-        const response = await diceRollGameAPI.rollDice(game._id)
-        const data = response.data?.data || response.data
-        setMyGame(data.game || data)
-        setShowRollAnimation(false)
-        
-        if (data.isComplete) {
-          const winnerName = data.winner === 'player1' ? (data.game?.players?.player1?.username || game.players?.player1?.username) : (data.game?.players?.player2?.username || game.players?.player2?.username)
-          setSuccess(`Game complete! Winner: ${winnerName}`)
-          // Refresh user data to get updated balance
-          await fetchUserData()
-          // Refresh game to show final state
-          await refreshGame()
-        } else {
-          setSuccess('Dice rolled! Waiting for opponent...')
-          // Refresh game to see opponent's roll if they rolled
-          await refreshGame()
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to roll dice')
-        setShowRollAnimation(false)
-      } finally {
-        setRolling(false)
+    try {
+      // Show animation for 2 seconds before making API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      const response = await diceRollGameAPI.rollDice(game._id)
+      const data = response?.data?.data || response?.data
+      const updatedGame = data?.game || data
+      
+      if (!updatedGame) {
+        throw new Error('Invalid game data received')
       }
-    }, 2000)
+      
+      setMyGame(updatedGame)
+      setShowRollAnimation(false)
+      
+      if (data?.isDraw) {
+        setSuccess('Draw! Both players rolled the same number. Please roll again!')
+        // Refresh game to reset state
+        await refreshGame()
+      } else if (data?.isComplete || data?.bothRolled || updatedGame.status === 'completed') {
+        // Game is completed (winner auto-selected)
+        if (updatedGame.status === 'completed' && updatedGame.selectedWinner) {
+          const isWinner = (updatedGame.selectedWinner === 'player1' && isPlayer1) || 
+                          (updatedGame.selectedWinner === 'player2' && isPlayer2)
+          setSuccess(isWinner ? '🎉 You won! Balance updated.' : 'Game completed. You lost.')
+          
+          // Update balance immediately
+          await fetchUserData()
+          try {
+            if (authAPI) {
+              const userResponse = await authAPI.me()
+              if (userResponse?.data) {
+                const { updateUserData } = await import('@/utils/auth')
+                updateUserData(userResponse.data)
+              }
+            }
+          } catch (err) {
+            // Silently fail
+            if (process.env.NODE_ENV === 'development') {
+              console.error('Error updating balance:', err)
+            }
+          }
+        } else {
+          setSuccess('Both players have rolled! Winner will be determined automatically...')
+        }
+        // Refresh game to show final state and update balance
+        await refreshGame()
+      } else {
+        setSuccess('Dice rolled! Waiting for opponent...')
+        // Refresh game to see opponent's roll if they rolled
+        await refreshGame()
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to roll dice'
+      setError(errorMessage)
+      setShowRollAnimation(false)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Roll dice error:', err)
+      }
+    } finally {
+      setRolling(false)
+    }
   }
 
   const isPlayer1 = game.players?.player1?.user?.toString() === user?._id?.toString()
@@ -1023,6 +1232,7 @@ function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetch
   const opponentUsername = isPlayer1 ? game.players?.player2?.username : game.players?.player1?.username
   const canRoll = (isPlayer1 && !game.players?.player1?.diceRoll) || (isPlayer2 && !game.players?.player2?.diceRoll)
   const bothRolled = game.players?.player1?.diceRoll && game.players?.player2?.diceRoll
+  const isDraw = bothRolled && myRoll === opponentRoll && game.status === 'in-progress'
 
   return (
     <div className="bg-[#111718] rounded-xl border border-[#3b5054] p-6 shadow-xl">
@@ -1152,7 +1362,17 @@ function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetch
         </button>
       )}
 
-      {game.status === 'in-progress' && !canRoll && !bothRolled && (
+      {isDraw && (
+        <div className="text-center p-6 bg-gradient-to-br from-yellow-500/20 to-[#1b2527] rounded-xl border-2 border-yellow-500/50 mb-4">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="material-symbols-outlined text-yellow-400 text-2xl">refresh</span>
+            <p className="text-white font-bold text-lg">Draw!</p>
+          </div>
+          <p className="text-white/70 text-sm mb-4">Both players rolled {myRoll}. Please roll again!</p>
+        </div>
+      )}
+
+      {game.status === 'in-progress' && !canRoll && !bothRolled && !isDraw && (
         <div className="text-center p-6 bg-[#1b2527] rounded-xl border border-[#3b5054]">
           <div className="size-12 animate-spin rounded-full border-4 border-purple-500 border-t-transparent mx-auto mb-3"></div>
           <p className="text-white font-semibold mb-1">
@@ -1164,13 +1384,154 @@ function PlayerVsPlayerGame({ game, user, setMyGame, setError, setSuccess, fetch
         </div>
       )}
 
-      {game.status === 'in-progress' && bothRolled && (
-        <div className="text-center p-6 bg-gradient-to-br from-green-500/20 to-[#1b2527] rounded-xl border-2 border-green-500/50">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="material-symbols-outlined text-green-400 text-2xl">hourglass_empty</span>
-            <p className="text-white font-bold text-lg">Both players have rolled!</p>
+      {(game.status === 'waiting-for-admin' || game.status === 'completed') && bothRolled && (
+        <div className="space-y-4">
+          <div className="text-center p-6 bg-gradient-to-br from-green-500/20 to-[#1b2527] rounded-xl border-2 border-green-500/50">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-green-400 text-2xl">check_circle</span>
+              <p className="text-white font-bold text-lg">
+                {game.status === 'completed' ? 'Game Completed!' : 'Both players have rolled!'}
+              </p>
+            </div>
+            {game.status === 'completed' && game.selectedWinner && (
+              <>
+                <p className="text-green-400 text-sm mb-2">
+                  Winner: {game.selectedWinner === 'player1' ? game.players?.player1?.username : game.players?.player2?.username}
+                </p>
+                {((isPlayer1 && game.selectedWinner === 'player1') || (isPlayer2 && game.selectedWinner === 'player2')) && (
+                  <p className="text-yellow-400 text-sm mb-2">🎉 You won! Your balance has been updated.</p>
+                )}
+              </>
+            )}
+            <p className="text-white/60 text-sm mb-4">
+              {game.status === 'completed' 
+                ? 'You can now play again or place bets!' 
+                : 'Winner will be automatically determined based on dice rolls'}
+            </p>
+            <div className="flex gap-3 justify-center flex-wrap">
+              <button
+                onClick={async () => {
+                  if (refreshing) return // Prevent double clicks
+                  
+                  setError('')
+                  setSuccess('')
+                  
+                  try {
+                    const response = await diceRollGameAPI.endGameSession(game._id)
+                    
+                    if (response?.data?.success || response?.data?.data) {
+                      const message = response.data?.message || response.data?.data?.message || 'Game session ended. You can now play again or place bets!'
+                      setSuccess(message)
+                      
+                      // Update balance in localStorage
+                      try {
+                        if (authAPI) {
+                          const userResponse = await authAPI.me()
+                          if (userResponse?.data) {
+                            const { updateUserData } = await import('@/utils/auth')
+                            updateUserData(userResponse.data)
+                          }
+                        }
+                      } catch (err) {
+                        // Silently fail - balance will update on next refresh
+                        if (process.env.NODE_ENV === 'development') {
+                          console.error('Error updating user data:', err)
+                        }
+                      }
+                      
+                      // Clear the game state immediately to hide previous results
+                      setMyGame(null)
+                      if (setGameMode) {
+                        setGameMode(null)
+                      }
+                      
+                      // Set flag to prevent auto-restore of this game
+                      setGameSessionEnded(true)
+                      
+                      // Refresh user data after clearing game
+                      await fetchUserData()
+                      
+                      // Reset the flag after a delay to allow new games
+                      setTimeout(() => {
+                        setGameSessionEnded(false)
+                      }, 5000)
+                    } else {
+                      throw new Error('Invalid response from server')
+                    }
+                  } catch (err) {
+                    const errorMessage = err.response?.data?.message || err.message || 'Failed to end game session'
+                    setError(errorMessage)
+                    if (process.env.NODE_ENV === 'development') {
+                      console.error('End game session error:', err)
+                    }
+                  }
+                }}
+                className="px-6 py-3 bg-[#0dccf2] text-black rounded-lg font-bold hover:bg-[#0dccf2]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={refreshing}
+              >
+                {refreshing ? 'Processing...' : 'End Game Session'}
+              </button>
+              {game.status === 'completed' && (
+                <button
+                  onClick={async () => {
+                    setError('')
+                    setSuccess('')
+                    
+                    // Clear the previous game state immediately to hide old results
+                    setMyGame(null)
+                    setShowRollAnimation(false)
+                    setRolling(false)
+                    
+                    // Set flag to prevent auto-restore of old game
+                    setGameSessionEnded(true)
+                    
+                    try {
+                      // Join queue again for a new game
+                      const betAmount = game.players?.player1?.betAmount || game.players?.player2?.betAmount || 100
+                      const response = await diceRollGameAPI.joinQueue({ betAmount })
+                      
+                      if (response?.data?.data?.matched && response?.data?.data?.game) {
+                        setSuccess('New match found! Starting new game...')
+                        // Reset flag to allow new game
+                        setGameSessionEnded(false)
+                        // Set the new game after a brief moment to ensure UI updates
+                        setTimeout(() => {
+                          setMyGame(response.data.data.game)
+                          if (setGameMode) {
+                            setGameMode('play')
+                          }
+                        }, 100)
+                        await fetchUserData()
+                      } else if (response?.data?.data) {
+                        setSuccess('Searching for opponent...')
+                        // Reset flag to allow new game when matched
+                        setGameSessionEnded(false)
+                        if (setMatchmakingStatus) {
+                          setMatchmakingStatus(response.data.data)
+                        }
+                        if (setGameMode) {
+                          setGameMode('play')
+                        }
+                      } else {
+                        throw new Error('Invalid response from server')
+                      }
+                    } catch (err) {
+                      const errorMessage = err.response?.data?.message || err.message || 'Failed to start new game'
+                      setError(errorMessage)
+                      // Reset flag on error so user can try again
+                      setGameSessionEnded(false)
+                      if (process.env.NODE_ENV === 'development') {
+                        console.error('Play again error:', err)
+                      }
+                    }
+                  }}
+                  className="px-6 py-3 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition-colors"
+                >
+                  Play Again
+                </button>
+              )}
+            </div>
           </div>
-          <p className="text-white/60 text-sm">Calculating winner...</p>
         </div>
       )}
     </div>

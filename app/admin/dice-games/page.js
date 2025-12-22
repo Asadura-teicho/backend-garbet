@@ -195,6 +195,8 @@ function DiceGameManagement() {
       case 'accepting-bets': return 'bg-green-500/20 text-green-400'
       case 'closed': return 'bg-yellow-500/20 text-yellow-400'
       case 'completed': return 'bg-blue-500/20 text-blue-400'
+      case 'in-progress': return 'bg-purple-500/20 text-purple-400'
+      case 'waiting-for-admin': return 'bg-orange-500/20 text-orange-400'
       default: return 'bg-gray-500/20 text-gray-400'
     }
   }
@@ -290,14 +292,38 @@ function DiceGameManagement() {
                             </td>
                             <td className="px-6 py-4">
                               <div className="text-white text-sm">
-                                <div>{game.options?.player1?.betCount || 0} bets</div>
-                                <div className="text-white/60">₺{stats.player1Total.toFixed(2)}</div>
+                                {game.gameType === 'player-vs-player' ? (
+                                  <>
+                                    <div>{game.players?.player1?.username || 'Player 1'}</div>
+                                    <div className="text-white/60">Bet: ₺{(game.players?.player1?.betAmount || 0).toFixed(2)}</div>
+                                    {game.players?.player1?.diceRoll && (
+                                      <div className="text-[#0dccf2] text-xs">Roll: {game.players.player1.diceRoll}</div>
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    <div>{game.options?.player1?.betCount || 0} bets</div>
+                                    <div className="text-white/60">₺{stats.player1Total.toFixed(2)}</div>
+                                  </>
+                                )}
                               </div>
                             </td>
                             <td className="px-6 py-4">
                               <div className="text-white text-sm">
-                                <div>{game.options?.player2?.betCount || 0} bets</div>
-                                <div className="text-white/60">₺{stats.player2Total.toFixed(2)}</div>
+                                {game.gameType === 'player-vs-player' ? (
+                                  <>
+                                    <div>{game.players?.player2?.username || 'Player 2'}</div>
+                                    <div className="text-white/60">Bet: ₺{(game.players?.player2?.betAmount || 0).toFixed(2)}</div>
+                                    {game.players?.player2?.diceRoll && (
+                                      <div className="text-purple-400 text-xs">Roll: {game.players.player2.diceRoll}</div>
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    <div>{game.options?.player2?.betCount || 0} bets</div>
+                                    <div className="text-white/60">₺{stats.player2Total.toFixed(2)}</div>
+                                  </>
+                                )}
                               </div>
                             </td>
                             <td className="px-6 py-4 text-white text-sm">
@@ -307,7 +333,10 @@ function DiceGameManagement() {
                             <td className="px-6 py-4">
                               {game.selectedWinner ? (
                                 <span className="text-white font-semibold">
-                                  {game.selectedWinner === 'player1' ? game.options?.player1?.name : game.options?.player2?.name}
+                                  {game.gameType === 'player-vs-player' 
+                                    ? (game.selectedWinner === 'player1' ? game.players?.player1?.username : game.players?.player2?.username)
+                                    : (game.selectedWinner === 'player1' ? game.options?.player1?.name : game.options?.player2?.name)
+                                  }
                                 </span>
                               ) : (
                                 <span className="text-white/60 text-sm">Not selected</span>
@@ -339,13 +368,17 @@ function DiceGameManagement() {
                                     Close
                                   </button>
                                 )}
-                                {(game.status === 'closed' || game.status === 'accepting-bets') && !game.selectedWinner && (
+                                {((game.status === 'closed' || game.status === 'accepting-bets' || game.status === 'waiting-for-admin') && !game.selectedWinner) && (
                                   <button
                                     onClick={() => openWinnerModal(game)}
                                     className="px-3 py-1 text-green-400 hover:bg-[#283639] rounded text-sm transition-colors"
+                                    disabled={saving}
                                   >
                                     Select Winner
                                   </button>
+                                )}
+                                {game.status === 'waiting-for-admin' && game.selectedWinner && (
+                                  <span className="text-xs text-white/60">Auto-selected</span>
                                 )}
                                 {game.status === 'completed' && (
                                   <button
@@ -457,8 +490,18 @@ function DiceGameManagement() {
                     className="w-full h-12 rounded-lg bg-white/5 border border-white/10 text-white px-4 focus:outline-none focus:ring-2 focus:ring-[#0dccf2]/50"
                   >
                     <option value="">Select winner</option>
-                    <option value="player1">{selectedGame.options?.player1?.name || 'Player 1'}</option>
-                    <option value="player2">{selectedGame.options?.player2?.name || 'Player 2'}</option>
+                    <option value="player1">
+                      {selectedGame.gameType === 'player-vs-player' 
+                        ? (selectedGame.players?.player1?.username || 'Player 1')
+                        : (selectedGame.options?.player1?.name || 'Player 1')
+                      }
+                    </option>
+                    <option value="player2">
+                      {selectedGame.gameType === 'player-vs-player' 
+                        ? (selectedGame.players?.player2?.username || 'Player 2')
+                        : (selectedGame.options?.player2?.name || 'Player 2')
+                      }
+                    </option>
                   </select>
                 </div>
                 <div>

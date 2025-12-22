@@ -43,10 +43,47 @@ export default function Navbar() {
     }
 
     checkAuth()
+    
+    // Listen for user data updates
+    const handleUserDataUpdate = (event) => {
+      if (event.detail) {
+        setUser(event.detail)
+      }
+    }
+    
+    window.addEventListener('userDataUpdated', handleUserDataUpdate)
+    
     // Check auth state periodically (when localStorage changes)
-    const interval = setInterval(checkAuth, 1000)
-    return () => clearInterval(interval)
+    const interval = setInterval(checkAuth, 2000) // Check every 2 seconds
+    
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('userDataUpdated', handleUserDataUpdate)
+    }
   }, [pathname])
+  
+  // Fetch fresh user data periodically to update balance
+  useEffect(() => {
+    if (!isLoggedIn) return
+    
+    const fetchUserBalance = async () => {
+      try {
+        const { authAPI } = await import('@/lib/api')
+        const response = await authAPI.me()
+        if (response.data) {
+          const { updateUserData } = await import('@/utils/auth')
+          updateUserData(response.data)
+        }
+      } catch (err) {
+        // Silently fail - balance will update on next successful fetch
+      }
+    }
+    
+    // Fetch balance every 5 seconds
+    const balanceInterval = setInterval(fetchUserBalance, 5000)
+    
+    return () => clearInterval(balanceInterval)
+  }, [isLoggedIn])
 
   const handleLogout = () => {
     authLogout()

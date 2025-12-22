@@ -94,3 +94,23 @@ export const storeUserData = (token, user) => {
   }
 };
 
+// Update user data (e.g., after balance changes)
+export const updateUserData = (userData) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      const updatedUser = { ...currentUser, ...userData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      // Dispatch custom event to notify components of user data update
+      window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
+    }
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error updating user data:', error);
+    }
+  }
+};
+

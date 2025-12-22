@@ -1,7 +1,7 @@
 {
-  "/transactions/page": "app/transactions/page.js",
-  "/bonuses/page": "app/bonuses/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/auth/login/page": "app/auth/login/page.js",
-  "/page": "app/page.js"
+  "/deposit/page": "app/deposit/page.js",
+  "/slots/page": "app/slots/page.js",
+  "/dice-roll/page": "app/dice-roll/page.js",
+  "/admin/games/page": "app/admin/games/page.js",
+  "/promotions/page": "app/promotions/page.js"
 }

@@ -471,7 +471,7 @@ function DashboardPage() {
                             </div>
                             <div className="flex-1">
                               <p className="font-medium text-white">{game.name || 'Unknown Game'}</p>
-                              <p className="text-sm text-gray-400">{game.provider || 'Unknown'} • {game.type === 'slot' ? 'Slot' : game.type === 'live_casino' ? 'Live Casino' : 'Game'}</p>
+                              <p className="text-sm text-gray-400">{game.provider || 'Unknown'} • {game.type === 'slot' ? 'Slot' : game.type === 'live_casino' ? 'Game' : 'Game'}</p>
                             </div>
                             <div className="text-right">
                               {gameHistory ? (

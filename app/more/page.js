@@ -16,13 +16,14 @@ export default function MorePage() {
       link: '/sports',
       color: 'bg-blue-500/20 text-blue-400'
     },
-    {
-      title: 'Poker',
-      description: 'Play poker against other players',
-      icon: 'casino',
-      link: '/live-casino',
-      color: 'bg-green-500/20 text-green-400'
-    },
+    // COMMENTED OUT - Live Casino Disabled
+    // {
+    //   title: 'Poker',
+    //   description: 'Play poker against other players',
+    //   icon: 'casino',
+    //   link: '/live-casino',
+    //   color: 'bg-green-500/20 text-green-400'
+    // },
     {
       title: 'Lottery',
       description: 'Try your luck with lottery draws',

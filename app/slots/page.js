@@ -226,10 +226,25 @@ export default function SlotsPage() {
                       NEW
                     </div>
                   )}
+                  {game.name === 'Sweet Bonanza' && (
+                    <div className="absolute top-2 right-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                      HOT
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
                     {game.isDiceRoll ? (
                       <Link
                         href="/dice-roll"
+                        className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
+                      >
+                        PLAY
+                      </Link>
+                    ) : game.name === 'Sweet Bonanza' ? (
+                      <Link
+                        href="/sweet-bonanza"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                        }}
                         className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
                       >
                         PLAY

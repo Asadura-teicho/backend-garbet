@@ -263,14 +263,16 @@ export default function HomePage() {
                   {gameCategories.map((category, index) => {
                     const getCategoryLink = (title) => {
                       if (title === 'SPOR BAHİSLERİ' || title === t('home.sportsBetting')) return '/sports'
-                      if (title === 'CANLI CASINO' || title === t('home.liveCasino')) return '/live-casino'
+                      // COMMENTED OUT - Live Casino Disabled
+                      // if (title === 'CANLI CASINO' || title === t('home.liveCasino')) return '/live-casino'
                       if (title === 'SLOT OYUNLARI' || title === t('home.slotGames')) return '/slots'
                       if (title === 'CRASH OYUNLARI' || title === t('home.crashGames')) return '/crash'
                       return '#'
                     }
                     const getCategoryTitle = (title) => {
                       if (title === 'SPOR BAHİSLERİ') return t('home.sportsBetting')
-                      if (title === 'CANLI CASINO') return t('home.liveCasino')
+                      // COMMENTED OUT - Live Casino Disabled
+                      // if (title === 'CANLI CASINO') return t('home.liveCasino')
                       if (title === 'SLOT OYUNLARI') return t('home.slotGames')
                       if (title === 'SANAL SPORLAR') return t('home.virtualSports')
                       if (title === 'CRASH OYUNLARI') return t('home.crashGames')

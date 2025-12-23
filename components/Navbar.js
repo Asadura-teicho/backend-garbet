@@ -258,57 +258,74 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Click outside to close mobile menu only - Must be before menu */}
+      {showMobileMenu && (
+        <div
+          className="fixed inset-0 z-[45] lg:hidden bg-black/20"
+          onClick={() => {
+            setShowMobileMenu(false)
+            document.body.classList.remove('mobile-menu-open')
+          }}
+        />
+      )}
+
       {/* Mobile Navigation Menu */}
       {showMobileMenu && (
-        <div className="lg:hidden border-t border-white/10 bg-[#1f1d37] animate-slide-in-left">
+        <div className="lg:hidden border-t border-white/10 bg-[#1f1d37] animate-slide-in-left relative z-[50]" onClick={(e) => e.stopPropagation()}>
           <nav className="flex flex-col py-2">
             <Link
               href="/promotions"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/promotions') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/promotions') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">military_tech</span>
               {t('common.promotions')}
             </Link>
             <Link
               href="/live-betting"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/live-betting') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/live-betting') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">bolt</span>
               {t('common.liveBet')}
             </Link>
             <Link
               href="/sports"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/sports') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/sports') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">sports_soccer</span>
               {t('common.sports')}
             </Link>
             <Link
               href="/slots"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/slots') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/slots') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">casino</span>
               {t('common.slotGames')}
             </Link>
+            {/* COMMENTED OUT - Live Casino Disabled
             <Link
               href="/live-casino"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
@@ -317,57 +334,63 @@ export default function Navbar() {
               <span className="material-symbols-outlined text-base align-middle mr-2">playing_cards</span>
               {t('common.liveCasino')}
             </Link>
+            */}
             <Link
               href="/dice-roll"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/dice-roll') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/dice-roll') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">casino</span>
               Dice Roll
             </Link>
             <Link
               href="/crash"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/crash') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/crash') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">trending_up</span>
               {t('common.crash')}
             </Link>
             <Link
               href="/tv-games"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/tv-games') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/tv-games') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">live_tv</span>
               {t('common.tvGames')}
             </Link>
             <Link
               href="/tournaments"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/tournaments') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/tournaments') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">emoji_events</span>
               {t('common.tournaments')}
             </Link>
             <Link
               href="/more"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm ${isActive('/more') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/more') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">more_horiz</span>
               {t('common.more')}
@@ -425,6 +448,7 @@ export default function Navbar() {
     {t('common.slotGames')}
   </Link>
 
+  {/* COMMENTED OUT - Live Casino Disabled
   <Link
     href="/live-casino"
     className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/live-casino') ? 'active' : ''}`}
@@ -437,6 +461,7 @@ export default function Navbar() {
     </span>
     {t('common.liveCasino')}
   </Link>
+  */}
 
   <Link
     href="/crash"
@@ -490,18 +515,6 @@ export default function Navbar() {
     {t('common.more')}
   </Link>
 </nav>
-
-
-      {/* Click outside to close mobile menu only */}
-      {showMobileMenu && (
-        <div
-          className="fixed inset-0 z-40 lg:hidden"
-          onClick={() => {
-            setShowMobileMenu(false)
-            document.body.classList.remove('mobile-menu-open')
-          }}
-        />
-      )}
     </header>
   )
 }

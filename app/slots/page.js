@@ -14,7 +14,7 @@ const games = [
   { id: 'dice-roll', name: 'Dice Roll', provider: 'Garbet Games', category: 'popular', isDiceRoll: true, image: 'https://media.istockphoto.com/id/525032572/photo/gambling-craps-game.jpg?s=1024x1024&w=is&k=20&c=EIaZAJCR2qvuh2ilrT4b4j4DTreeMbOWvWi7URBcQUA=' },
   // (YOUR FULL GAMES ARRAY — UNCHANGED)
   { id: 1, name: 'Gate of Olympus', provider: 'Pragmatic Play', category: 'popular', jackpot: true, image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=400&fit=crop' },
-  { id: 2, name: 'Sweet Bonanza', provider: 'Pragmatic Play', category: 'popular', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop' },
+  { id: 2, name: 'Sweet Bonanza', provider: 'Pragmatic Play', category: 'popular', image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=600&fit=crop&q=80', isSweetBonanza: true },
   // ⚠️ KEEP ALL 100 ITEMS EXACTLY AS YOU SENT
 ]
 
@@ -210,60 +210,94 @@ export default function SlotsPage() {
           {/* Games Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
             {displayedGames.map((game) => (
-              <div key={game.id} className="group relative bg-[#2a2a2a] rounded-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-200 cursor-pointer">
-                <div className="relative">
-                  <img 
-                    src={game.image} 
-                    alt={game.name}
-                    className="w-full h-32 sm:h-40 object-cover"
-                  />
-                  {game.jackpot && (
-                    <div className="absolute top-2 left-2 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded">
-                      JACKPOT
+              <div key={game.id} className="group relative bg-[#2a2a2a] rounded-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-200">
+                {game.isDiceRoll ? (
+                  <Link href="/dice-roll" className="block cursor-pointer">
+                    <div className="relative">
+                      <img 
+                        src={game.image} 
+                        alt={game.name}
+                        className="w-full h-32 sm:h-40 object-cover"
+                      />
+                      {game.jackpot && (
+                        <div className="absolute top-2 left-2 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded">
+                          JACKPOT
+                        </div>
+                      )}
+                      {game.isDiceRoll && (
+                        <div className="absolute top-2 left-2 bg-[#0dccf2] text-black text-xs font-bold px-2 py-1 rounded">
+                          NEW
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400">
+                          PLAY
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  {game.isDiceRoll && (
-                    <div className="absolute top-2 left-2 bg-[#0dccf2] text-black text-xs font-bold px-2 py-1 rounded">
-                      NEW
+                  </Link>
+                ) : game.isSweetBonanza || game.name === 'Sweet Bonanza' ? (
+                  <div 
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      if (router) {
+                        router.push('/sweet-bonanza')
+                      } else {
+                        window.location.href = '/sweet-bonanza'
+                      }
+                    }}
+                    onTouchStart={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      if (router) {
+                        router.push('/sweet-bonanza')
+                      } else {
+                        window.location.href = '/sweet-bonanza'
+                      }
+                    }}
+                    className="block cursor-pointer"
+                  >
+                    <div className="relative">
+                      <img 
+                        src={game.image} 
+                        alt={game.name}
+                        className="w-full h-32 sm:h-40 object-cover"
+                      />
+                      <div className="absolute top-2 right-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                        HOT
+                      </div>
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400">
+                          PLAY
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  {game.name === 'Sweet Bonanza' && (
-                    <div className="absolute top-2 right-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
-                      HOT
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
-                    {game.isDiceRoll ? (
-                      <Link
-                        href="/dice-roll"
-                        className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
-                      >
-                        PLAY
-                      </Link>
-                    ) : game.name === 'Sweet Bonanza' ? (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          router.push('/sweet-bonanza')
-                        }}
-                        className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400 cursor-pointer"
-                      >
-                        PLAY
-                      </button>
-                    ) : (
-                      <Link
-                        href={`/slots?game=${encodeURIComponent(game.name || game.id || '')}`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                        }}
-                        className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
-                      >
-                        PLAY
-                      </Link>
-                    )}
                   </div>
-                </div>
+                ) : (
+                  <Link
+                    href={`/slots?game=${encodeURIComponent(game.name || game.id || '')}`}
+                    className="block cursor-pointer"
+                  >
+                    <div className="relative">
+                      <img 
+                        src={game.image} 
+                        alt={game.name}
+                        className="w-full h-32 sm:h-40 object-cover"
+                      />
+                      {game.jackpot && (
+                        <div className="absolute top-2 left-2 bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded">
+                          JACKPOT
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400">
+                          PLAY
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                )}
                 <div className="p-3">
                   <h3 className="text-white text-sm font-semibold truncate">{game.name}</h3>
                   <p className="text-gray-400 text-xs truncate">{game.provider}</p>

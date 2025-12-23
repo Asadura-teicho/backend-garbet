@@ -235,17 +235,15 @@ export default function SlotsPage() {
                         PLAY
                       </Link>
                     ) : (
-                      <button 
+                      <Link
+                        href={`/slots?game=${encodeURIComponent(game.name || game.id || '')}`}
                         onClick={(e) => {
                           e.stopPropagation()
-                          // TODO: Launch game or navigate to game page
-                          console.log('Play game:', game.name)
-                          // Example: router.push(`/games/${game.id}`)
                         }}
                         className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
                       >
                         PLAY
-                      </button>
+                      </Link>
                     )}
                   </div>
                 </div>

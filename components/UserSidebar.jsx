@@ -35,7 +35,7 @@ export default function UserSidebar() {
   ]
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 flex-col bg-background-dark border-r border-surface hidden lg:flex z-50">
+    <aside className="fixed left-0 top-0 h-screen w-64 flex-col bg-background-dark border-r border-surface hidden lg:flex z-40">
       <div className="flex items-center gap-3 px-6 py-5 border-b border-surface">
         <div className="size-8 text-primary">
           <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">

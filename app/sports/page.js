@@ -114,20 +114,32 @@ export default function SportsPage() {
     }
   }
 
-  const transformedMatches = matches.map(transformMatchForUI)
+  const transformedMatches = matches.map(transformMatchForUI).filter(m => m && (m._id || m.id) && m.odds && Object.keys(m.odds).length > 0) // Filter out invalid matches
 
   const handleSelectBet = (match, selection, odds) => {
+    // Handle both transformed and raw match objects
+    const rawMatch = match.rawMatch || match
+    const matchId = rawMatch._id || match._id || match.id
+    
+    // Validate inputs
+    if (!matchId || !odds || isNaN(parseFloat(odds))) {
+      console.error('Invalid bet selection:', { match, selection, odds })
+      setError('Invalid bet selection. Please try again.')
+      return
+    }
+
     const bet = {
-      matchId: match._id,
-      matchName: match.matchName || `${match.teamA} vs ${match.teamB}`,
+      matchId: matchId,
+      matchName: match.matchName || rawMatch.matchName || `${rawMatch.teamA || 'Team A'} vs ${rawMatch.teamB || 'Team B'}`,
       selection: selection === '1' ? 'Team A Win' : selection === 'X' ? 'Draw' : 'Team B Win',
+      selectionShort: selection, // Keep short form for display
       odds: parseFloat(odds),
       marketType: '1X2',
       marketName: 'Match Winner',
     }
 
     // Check if already selected
-    const existingIndex = selectedBets.findIndex(b => b.matchId === match._id && b.selection === bet.selection)
+    const existingIndex = selectedBets.findIndex(b => b.matchId === matchId && b.selection === bet.selection)
     if (existingIndex >= 0) {
       setSelectedBets(selectedBets.filter((_, i) => i !== existingIndex))
     } else {
@@ -331,8 +343,10 @@ export default function SportsPage() {
                   </div>
                   <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border-color">
                     {['1', 'X', '2'].map((option) => {
+                      const oddsValue = match.odds?.[option]
+                      const matchId = match._id || match.id || (match.rawMatch && match.rawMatch._id)
                       const isSelected = selectedBets.some(
-                        b => b.matchId === match._id && 
+                        b => b.matchId === matchId && 
                         ((option === '1' && b.selection === 'Team A Win') ||
                          (option === 'X' && b.selection === 'Draw') ||
                          (option === '2' && b.selection === 'Team B Win'))
@@ -340,15 +354,24 @@ export default function SportsPage() {
                       return (
                         <button 
                           key={option}
-                          onClick={() => handleSelectBet(match, option, match.odds[option])}
+                          onClick={() => {
+                            if (oddsValue && !isNaN(parseFloat(oddsValue))) {
+                              handleSelectBet(match, option, oddsValue)
+                            } else {
+                              setError('Invalid odds for this selection')
+                            }
+                          }}
+                          disabled={!oddsValue || isNaN(parseFloat(oddsValue))}
                           className={`flex items-center justify-between rounded-md p-2 transition-colors ${
                             isSelected
                               ? 'bg-primary/30 border-2 border-primary'
-                              : 'bg-background-dark hover:bg-primary/20'
+                              : oddsValue && !isNaN(parseFloat(oddsValue))
+                              ? 'bg-background-dark hover:bg-primary/20'
+                              : 'bg-background-dark/30 opacity-50 cursor-not-allowed'
                           }`}
                         >
                           <span className="text-xs text-text-secondary">{option}</span>
-                          <span className="text-sm font-bold text-primary">{match.odds[option]?.toFixed(2) || 'N/A'}</span>
+                          <span className="text-sm font-bold text-primary">{oddsValue ? parseFloat(oddsValue).toFixed(2) : 'N/A'}</span>
                         </button>
                       )
                     })}
@@ -360,7 +383,7 @@ export default function SportsPage() {
 
           {/* Right Sidebar (Bet Slip) */}
           <aside className="col-span-12 hidden lg:col-span-3 lg:block">
-            <div className="sticky top-24 flex flex-col gap-4 rounded-lg bg-surface p-4">
+            <div className="sticky top-24 flex flex-col gap-4 rounded-lg bg-surface p-4 z-30">
               <h3 className="font-heading text-lg font-semibold text-white">{t('sports.betSlip')}</h3>
 
               {selectedBets.length === 0 ? (
@@ -370,58 +393,78 @@ export default function SportsPage() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {/* Selected bets would go here */}
+                  {/* Selected Bets List */}
+                  <div className="flex flex-col gap-3 max-h-64 overflow-y-auto">
+                    {selectedBets.map((bet, index) => {
+                      if (!bet || !bet.matchId) {
+                        if (process.env.NODE_ENV === 'development') {
+                          console.warn('Invalid bet in selectedBets:', bet)
+                        }
+                        return null
+                      }
+                      return (
+                        <div key={`${bet.matchId}-${bet.selection}-${index}`} className="rounded-lg bg-background-dark p-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-white truncate">{bet.matchName || 'Match'}</p>
+                              <p className="text-xs text-text-secondary mt-1">{bet.marketName || 'Match Winner'}</p>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSelectedBets(selectedBets.filter((_, i) => i !== index))
+                              }}
+                              className="text-text-secondary hover:text-red-400 transition-colors shrink-0"
+                              aria-label="Remove bet"
+                            >
+                              <span className="material-symbols-outlined text-base">close</span>
+                            </button>
+                          </div>
+                          <div className="mt-2 flex items-center justify-between">
+                            <p className="text-sm font-bold text-primary">{bet.selection || 'N/A'}</p>
+                            <p className="text-sm font-bold text-white">@{bet.odds ? parseFloat(bet.odds).toFixed(2) : 'N/A'}</p>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Total Odds and Stake */}
+                  <div className="border-t border-background-dark pt-4">
+                    <div className="flex items-center justify-between text-sm mb-3">
+                      <span className="text-text-secondary">{t('sports.totalOdds')}</span>
+                      <span className="font-bold text-white">{totalOdds}</span>
+                    </div>
+                    <div className="flex flex-col gap-2 mb-3">
+                      <label className="text-xs text-text-secondary">{t('sports.totalStake')}</label>
+                      <input
+                        type="number"
+                        value={stake}
+                        onChange={(e) => setStake(e.target.value)}
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                        className="w-full rounded-md bg-background-dark px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-lg mb-4">
+                      <span className="text-text-secondary">{t('sports.potentialWinnings')}</span>
+                      <span className="font-bold text-primary">₺{potentialWinnings}</span>
+                    </div>
+                    <button 
+                      onClick={handlePlaceBet}
+                      disabled={selectedBets.length === 0 || !stake || parseFloat(stake) <= 0 || placingBet}
+                      className={`w-full rounded-lg py-3 text-sm font-bold transition-all ${
+                        selectedBets.length > 0 && stake && parseFloat(stake) > 0
+                          ? 'bg-primary text-background-dark cursor-pointer hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]' 
+                          : 'bg-primary/30 text-primary/60 cursor-not-allowed'
+                      }`}
+                    >
+                      {placingBet ? 'Placing Bet...' : t('sports.placeBet')}
+                    </button>
+                  </div>
                 </div>
               )}
-
-              <div className="flex flex-col gap-4">
-                {selectedBets.length > 0 && (
-                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
-                    {selectedBets.map((bet, index) => (
-                      <div key={index} className="flex items-center justify-between rounded-md bg-background-dark p-2 text-xs">
-                        <span className="text-text-secondary truncate">{bet.matchName}</span>
-                        <button
-                          onClick={() => setSelectedBets(selectedBets.filter((_, i) => i !== index))}
-                          className="text-red-400 hover:text-red-300 ml-2"
-                        >
-                          <span className="material-symbols-outlined text-sm">close</span>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-text-secondary">{t('sports.totalOdds')}</span>
-                  <span className="font-bold text-white">{totalOdds}</span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs text-text-secondary">{t('sports.totalStake')}</label>
-                  <input
-                    type="number"
-                    value={stake}
-                    onChange={(e) => setStake(e.target.value)}
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    className="w-full rounded-md bg-background-dark px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                <div className="flex items-center justify-between text-lg">
-                  <span className="text-text-secondary">{t('sports.potentialWinnings')}</span>
-                  <span className="font-bold text-primary">₺{potentialWinnings}</span>
-                </div>
-                <button 
-                  onClick={handlePlaceBet}
-                  disabled={selectedBets.length === 0 || !stake || parseFloat(stake) <= 0 || placingBet}
-                  className={`w-full rounded-lg py-3 text-sm font-bold ${
-                    selectedBets.length > 0 && stake && parseFloat(stake) > 0
-                      ? 'bg-primary text-background-dark cursor-pointer hover:opacity-90' 
-                      : 'bg-primary/30 text-primary/60 cursor-not-allowed'
-                  }`}
-                >
-                  {placingBet ? 'Placing Bet...' : t('sports.placeBet')}
-                </button>
-              </div>
             </div>
           </aside>
         </div>
@@ -429,7 +472,7 @@ export default function SportsPage() {
 
       {/* Mobile Bet Slip Button */}
       {selectedBets.length > 0 && (
-        <div className="sticky bottom-0 left-0 right-0 lg:hidden p-4 bg-gradient-to-t from-background-dark to-transparent">
+        <div className="fixed bottom-0 left-0 right-0 z-[50] lg:hidden p-4 bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent shadow-lg border-t border-white/10">
           <button 
             onClick={handlePlaceBet}
             disabled={!stake || parseFloat(stake) <= 0 || placingBet}

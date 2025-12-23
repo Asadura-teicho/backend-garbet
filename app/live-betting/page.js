@@ -66,8 +66,9 @@ export default function LiveBettingPage() {
     }
   }
 
-  // Group matches by league
-  const groupedMatches = matches.reduce((acc, match) => {
+  // Group matches by league (filter out invalid matches)
+  const validMatches = matches.filter(m => m && m._id && m.markets && Array.isArray(m.markets) && m.markets.length > 0)
+  const groupedMatches = validMatches.reduce((acc, match) => {
     const league = match.league || 'Other'
     if (!acc[league]) {
       acc[league] = []
@@ -115,10 +116,19 @@ export default function LiveBettingPage() {
   }
 
   const handleSelectBet = (match, selection, odds) => {
+    // Validate inputs
+    if (!match || !match._id || !odds || isNaN(parseFloat(odds))) {
+      console.error('Invalid bet selection:', { match, selection, odds })
+      setError('Invalid bet selection. Please try again.')
+      return
+    }
+
     const bet = {
       matchId: match._id,
-      matchName: match.matchName || `${match.teamA} vs ${match.teamB}`,
+      matchName: match.matchName || `${match.teamA || 'Team A'} vs ${match.teamB || 'Team B'}`,
+      match: match.matchName || `${match.teamA || 'Team A'} vs ${match.teamB || 'Team B'}`, // For display compatibility
       selection: selection === '1' ? 'Team A Win' : selection === 'X' ? 'Draw' : 'Team B Win',
+      selectionShort: selection, // Keep short form for display
       odds: parseFloat(odds),
       marketType: '1X2',
       marketName: 'Match Winner',
@@ -143,19 +153,35 @@ export default function LiveBettingPage() {
     setError('')
 
     try {
+      // Place bets sequentially to handle errors properly
+      const results = []
       for (const bet of selectedBets) {
-        await matchAPI.placeBet(bet.matchId, {
-          marketType: bet.marketType,
-          marketName: bet.marketName,
-          selection: bet.selection,
-          stake: parseFloat(stake),
-          useBonusBalance: false,
-        })
+        try {
+          const response = await matchAPI.placeBet(bet.matchId, {
+            marketType: bet.marketType,
+            marketName: bet.marketName,
+            selection: bet.selection,
+            stake: parseFloat(stake),
+            useBonusBalance: false,
+          })
+          results.push({ success: true, bet, response })
+        } catch (betError) {
+          results.push({ success: false, bet, error: betError })
+          // Continue placing other bets even if one fails
+        }
       }
 
-      setSelectedBets([])
-      setStake('10.00')
-      router.push('/dashboard')
+      // Check if all bets were placed successfully
+      const allSuccessful = results.every(r => r.success)
+      if (allSuccessful) {
+        setSelectedBets([])
+        setStake('10.00')
+        router.push('/dashboard')
+      } else {
+        // Show error for failed bets
+        const failedBets = results.filter(r => !r.success)
+        setError(`Failed to place ${failedBets.length} bet(s). Please try again.`)
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to place bet')
       log.apiError('/matches/bet', err)
@@ -256,6 +282,7 @@ export default function LiveBettingPage() {
                         </div>
                         <div className="grid grid-cols-3 gap-2">
                           {['1', 'X', '2'].map((option) => {
+                            const oddsValue = transformed.odds?.[option]
                             const isSelected = selectedBets.some(
                               b => b.matchId === match._id && 
                               ((option === '1' && b.selection === 'Team A Win') ||
@@ -265,15 +292,24 @@ export default function LiveBettingPage() {
                             return (
                               <button
                                 key={option}
-                                onClick={() => handleSelectBet(match, option, transformed.odds[option])}
+                                onClick={() => {
+                                  if (oddsValue && !isNaN(parseFloat(oddsValue))) {
+                                    handleSelectBet(match, option, oddsValue)
+                                  } else {
+                                    setError('Invalid odds for this selection')
+                                  }
+                                }}
+                                disabled={!oddsValue || isNaN(parseFloat(oddsValue))}
                                 className={`group flex flex-col items-center justify-center rounded-lg py-2 transition-colors ${
                                   isSelected
                                     ? 'bg-primary/30 border-2 border-primary'
-                                    : 'bg-background-dark/50 hover:bg-background-dark/80'
+                                    : oddsValue && !isNaN(parseFloat(oddsValue))
+                                    ? 'bg-background-dark/50 hover:bg-background-dark/80'
+                                    : 'bg-background-dark/30 opacity-50 cursor-not-allowed'
                                 }`}
                               >
                                 <span className="text-xs text-secondary-text">{option}</span>
-                                <span className="font-bold text-primary-text">{transformed.odds[option]?.toFixed(2) || 'N/A'}</span>
+                                <span className="font-bold text-primary-text">{oddsValue ? parseFloat(oddsValue).toFixed(2) : 'N/A'}</span>
                               </button>
                             )
                           })}
@@ -288,7 +324,7 @@ export default function LiveBettingPage() {
         </div>
 
         {/* BetSlip - Desktop */}
-        <aside className="sticky top-24 hidden h-fit w-full max-w-xs flex-col gap-4 lg:flex">
+        <aside className="sticky top-24 hidden h-fit w-full max-w-xs flex-col gap-4 lg:flex z-30">
           <div className="rounded-lg bg-surface p-4 shadow-soft">
             <h3 className="mb-4 text-lg font-bold text-primary-text">{t('liveBetting.betSlip')}</h3>
 
@@ -299,23 +335,40 @@ export default function LiveBettingPage() {
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                {selectedBets.map((bet, index) => (
-                  <div key={index} className="rounded-lg bg-background-dark p-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-primary-text">{bet.match}</p>
-                        <p className="text-xs text-secondary-text">{bet.type}</p>
+                {selectedBets.map((bet, index) => {
+                  if (!bet || !bet.matchId) {
+                    if (process.env.NODE_ENV === 'development') {
+                      console.warn('Invalid bet in selectedBets:', bet)
+                    }
+                    return null
+                  }
+                  return (
+                    <div key={`${bet.matchId}-${bet.selection}-${index}`} className="rounded-lg bg-background-dark p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-primary-text truncate">{bet.matchName || bet.match || 'Match'}</p>
+                          <p className="text-xs text-secondary-text mt-1">{bet.type || bet.marketName || 'Match Winner'}</p>
+                        </div>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            removeBet(index)
+                          }} 
+                          className="text-secondary-text hover:text-red-400 transition-colors shrink-0"
+                          aria-label="Remove bet"
+                        >
+                          <span className="material-symbols-outlined text-base">close</span>
+                        </button>
                       </div>
-                      <button onClick={() => removeBet(index)} className="text-secondary-text hover:text-primary-text">
-                        <span className="material-symbols-outlined text-base">close</span>
-                      </button>
+                      <div className="mt-2 flex items-center justify-between">
+                        <p className="text-sm font-bold text-primary">
+                          {bet.selectionShort || bet.selection || 'N/A'}
+                        </p>
+                        <p className="text-sm font-bold text-primary-text">@{bet.odds ? parseFloat(bet.odds).toFixed(2) : 'N/A'}</p>
+                      </div>
                     </div>
-                    <div className="mt-2 flex items-center justify-between">
-                      <p className="text-sm font-bold text-primary">{t('liveBetting.selectionLabel')}: {bet.selection}</p>
-                      <p className="text-sm font-bold text-primary-text">@{bet.odds}</p>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
 
                 {/* Total Odds and Stake */}
                 <div className="mt-2 border-t border-background-dark pt-3">
@@ -362,7 +415,7 @@ export default function LiveBettingPage() {
 
       {/* BetSlip Trigger - Mobile */}
       {selectedBets.length > 0 && (
-        <div className="sticky bottom-0 z-40 block bg-gradient-to-t from-background-dark to-transparent px-4 pb-4 pt-8 lg:hidden">
+        <div className="fixed bottom-0 left-0 right-0 z-[50] block bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent px-4 pb-4 pt-8 lg:hidden shadow-lg border-t border-white/10">
           <button 
             onClick={handlePlaceBet}
             disabled={!stake || parseFloat(stake) <= 0 || placingBet}

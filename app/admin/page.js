@@ -216,9 +216,9 @@ function AdminDashboard() {
       <AdminSidebar />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark ml-0 lg:ml-64 pt-16 lg:pt-0">
+      <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark ml-0 lg:ml-64">
         {/* TopNavBar */}
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-surface bg-background-dark/80 px-4 sm:px-6 lg:px-8 backdrop-blur-sm">
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-surface bg-background-dark/95 px-4 sm:px-6 lg:px-8 backdrop-blur-md shadow-sm">
           <div className="flex items-center gap-8">
             <form onSubmit={handleSearch} className="flex flex-col min-w-40 !h-10 w-80 max-w-sm">
               <div className="flex w-full flex-1 items-stretch rounded-lg h-full">

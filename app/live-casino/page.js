@@ -223,18 +223,16 @@ export default function LiveCasinoPage() {
                       </div>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <button 
+                      <Link
+                        href={`/live-casino?game=${encodeURIComponent(game.name || game.id || '')}`}
                         onClick={(e) => {
                           e.stopPropagation()
-                          // TODO: Launch live casino game
-                          console.log('Play live casino game:', game.name)
-                          // Example: router.push(`/live-casino/${game.id}`)
                         }}
                         className="flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-black hover:bg-yellow-400 transition-colors"
                       >
                         <span>{t('liveCasino.playNow')}</span>
                         <span className="material-symbols-outlined text-base">play_arrow</span>
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 ))}

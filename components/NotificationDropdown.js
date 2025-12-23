@@ -137,7 +137,7 @@ export default function NotificationDropdown({ userId }) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-12 z-50 w-96 rounded-lg bg-surface border border-surface shadow-xl">
+        <div className="absolute right-0 top-12 z-[60] w-80 sm:w-96 rounded-lg bg-surface border border-surface shadow-xl animate-fade-in max-h-[calc(100vh-120px)] overflow-hidden flex flex-col">
           <div className="flex items-center justify-between border-b border-surface p-4">
             <h3 className="text-lg font-bold text-white">Notifications</h3>
             <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ export default function NotificationDropdown({ userId }) {
             </div>
           </div>
 
-          <div className="max-h-96 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto max-h-[calc(100vh-200px)]">
             {loading ? (
               <div className="flex items-center justify-center py-8">
                 <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>

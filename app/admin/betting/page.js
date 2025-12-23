@@ -222,7 +222,7 @@ const navItems = [
         <AdminSidebar />
 
         {/* Main Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 ml-0 lg:ml-64">
+        <main className="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8">
         <div className="w-full max-w-7xl mx-auto">
           {/* PageHeading */}
           <div className="flex flex-wrap justify-between items-center gap-4 mb-6">

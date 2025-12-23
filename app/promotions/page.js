@@ -19,11 +19,23 @@ export default function PromotionsPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [total, setTotal] = useState(0)
   const [claiming, setClaiming] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(null) // Now stores object with image, title, description, category
 
   // Fetch promotions from API
   useEffect(() => {
     fetchPromotions()
   }, [selectedFilter, currentPage])
+
+  // Add keyboard handler for ESC key to close modal
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && selectedImage) {
+        setSelectedImage(null)
+      }
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [selectedImage])
 
   const fetchPromotions = async () => {
     setLoading(true)
@@ -52,7 +64,26 @@ export default function PromotionsPage() {
       }
 
       const response = await promotionAPI.getActivePromotions(params)
-      setPromotions(response.data.promotions || [])
+      const fetchedPromotions = response.data.promotions || []
+      
+      // Ensure all promotions have images - assign default images if missing
+      const promotionsWithImages = fetchedPromotions.map((promo, index) => {
+        if (!promo.bannerImage) {
+          // Assign default images based on promotion type or index
+          const defaultImages = [
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1542744095-291d1f67b221?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800&h=600&fit=crop&q=80',
+          ]
+          promo.bannerImage = defaultImages[index % defaultImages.length]
+        }
+        return promo
+      })
+      
+      setPromotions(promotionsWithImages)
       setTotalPages(response.data.totalPages || 1)
       setTotal(response.data.total || 0)
     } catch (err) {
@@ -120,7 +151,24 @@ export default function PromotionsPage() {
       categoryColor: categoryColors[category] || 'bg-gray-500/80',
       buttonText,
       buttonStyle,
-      image: promo.bannerImage || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop',
+      image: (() => {
+        // Always ensure an image is assigned
+        if (promo.bannerImage && promo.bannerImage.trim() !== '') {
+          return promo.bannerImage
+        }
+        // Use reliable default images for promotions - casino themed
+        const defaultImages = [
+          'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop',
+          'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800&h=600&fit=crop',
+          'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=800&h=600&fit=crop',
+          'https://images.unsplash.com/photo-1542744095-291d1f67b221?w=800&h=600&fit=crop',
+          'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&q=80',
+          'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=800&h=600&fit=crop&q=80',
+        ]
+        // Use index based on promotion ID for consistent image assignment
+        const imageIndex = promo._id ? (promo._id.toString().charCodeAt(0) % defaultImages.length) : Math.floor(Math.random() * defaultImages.length)
+        return defaultImages[imageIndex]
+      })(),
     }
   }
 
@@ -176,29 +224,72 @@ export default function PromotionsPage() {
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {transformedPromotions.map((promo) => (
-                  <div key={promo.id} className="flex flex-col gap-4 overflow-hidden rounded-xl bg-[#1A1A1A] p-4 shadow-lg shadow-black/20 transition-transform hover:scale-[1.02]">
-                    <div className="relative w-full">
-                      <div 
-                        className="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg" 
-                        style={{ backgroundImage: `url("${promo.image}")` }}
-                      ></div>
-                      <div className={`absolute top-3 left-3 rounded-md ${promo.categoryColor} px-2.5 py-1 text-xs font-bold uppercase text-white backdrop-blur-sm`}>
-                        {promo.category}
+                  <div key={promo.id} className="flex flex-col gap-0 overflow-hidden rounded-xl bg-[#1A1A1A] shadow-lg shadow-black/20 transition-transform hover:scale-[1.02]">
+                    {/* Info Section at Top */}
+                    <div className="flex flex-col gap-2 p-4 pb-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <h3 className="text-white text-xl font-bold leading-tight mb-1">{promo.title}</h3>
+                          <p className="text-white/70 text-sm font-normal leading-normal line-clamp-2">{promo.description}</p>
+                        </div>
+                        <div className={`shrink-0 rounded-md ${promo.categoryColor} px-2.5 py-1 text-xs font-bold uppercase text-white backdrop-blur-sm`}>
+                          {promo.category}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-3">
-                      <h3 className="text-white text-xl font-bold leading-normal">{promo.title}</h3>
-                      <p className="text-white/70 text-sm font-normal leading-normal">{promo.description}</p>
+                    
+                    {/* Image Section */}
+                    <div className="relative w-full cursor-pointer group" onClick={() => setSelectedImage({ 
+                      image: promo.image, 
+                      title: promo.title, 
+                      description: promo.description, 
+                      category: promo.category,
+                      categoryColor: promo.categoryColor
+                    })}>
+                      <img
+                        src={promo.image}
+                        alt={promo.title || 'Promotion'}
+                        className="w-full aspect-video object-cover transition-all duration-300 group-hover:brightness-110 group-hover:scale-105"
+                        onError={(e) => {
+                          // Fallback to a default image if the image fails to load
+                          e.target.src = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop'
+                        }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">
+                        <span className="material-symbols-outlined text-white/0 group-hover:text-white/100 text-5xl transition-all duration-300 transform scale-0 group-hover:scale-100 drop-shadow-lg">
+                          zoom_in
+                        </span>
+                      </div>
+                      <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <p className="text-white text-xs font-medium bg-black/60 backdrop-blur-sm rounded px-2 py-1">Click to view full image</p>
+                      </div>
+                    </div>
+                    
+                    {/* Button Section */}
+                    <div className="p-4 pt-3">
                       <button 
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation() // Prevent image click from triggering
                           if (promo.canClaim) {
                             handleClaim(promo._id)
+                          } else if (promo.buttonText === t('promotions.viewDetails')) {
+                            // For "View Details" button, open the image modal with full promotion info
+                            setSelectedImage({ 
+                              image: promo.image, 
+                              title: promo.title, 
+                              description: promo.description, 
+                              category: promo.category,
+                              categoryColor: promo.categoryColor
+                            })
+                            // Optionally also navigate to detail page after a delay or on close
+                            // router.push(`/promotions/${promo._id}`)
                           } else {
+                            // For other buttons, navigate to promotion detail page
                             router.push(`/promotions/${promo._id}`)
                           }
                         }}
                         disabled={claiming === promo._id}
-                        className={`mt-2 flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-4 text-sm font-bold leading-normal tracking-[0.015em] transition-colors ${promo.buttonStyle} disabled:opacity-50`}
+                        className={`flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-4 text-sm font-bold leading-normal tracking-[0.015em] transition-all duration-200 ${promo.buttonStyle} disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]`}
                       >
                         <span className="truncate">
                           {claiming === promo._id ? 'Claiming...' : promo.buttonText}
@@ -269,6 +360,65 @@ export default function PromotionsPage() {
           </div>
         </main>
       </div>
+
+      {/* Enhanced Image Lightbox Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 animate-fade-in"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-7xl max-h-[95vh] w-full h-full flex flex-col items-center justify-center gap-4">
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 z-10 flex items-center justify-center size-12 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-200 backdrop-blur-sm hover:scale-110 shadow-lg"
+              aria-label="Close image"
+            >
+              <span className="material-symbols-outlined text-3xl">close</span>
+            </button>
+            
+            {/* Promotion Info Card */}
+            <div className="absolute top-4 left-4 right-20 z-10 bg-gradient-to-r from-black/80 to-black/60 backdrop-blur-md rounded-xl p-4 shadow-2xl border border-white/10 animate-slide-in-left">
+                  <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    {selectedImage.category && (
+                      <span className={`rounded-md ${selectedImage.categoryColor || 'bg-blue-500/80'} px-3 py-1 text-xs font-bold uppercase text-white`}>
+                        {selectedImage.category}
+                      </span>
+                    )}
+                  </div>
+                  <h2 className="text-white text-2xl font-bold mb-2">{selectedImage.title || 'Promotion'}</h2>
+                  {selectedImage.description && (
+                    <p className="text-white/80 text-sm leading-relaxed line-clamp-3">{selectedImage.description}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Image Container */}
+            <div className="flex-1 flex items-center justify-center w-full overflow-hidden">
+              <img
+                src={selectedImage.image || selectedImage}
+                alt={selectedImage.title || 'Promotion'}
+                className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl animate-scale-in"
+                onClick={(e) => e.stopPropagation()}
+                onError={(e) => {
+                  e.target.src = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop'
+                }}
+              />
+            </div>
+            
+            {/* Navigation Hint */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 backdrop-blur-md rounded-full px-6 py-3 text-white text-sm font-medium shadow-lg border border-white/10">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg">info</span>
+                <span>Click outside or press ESC to close</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

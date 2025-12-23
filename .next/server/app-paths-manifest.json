@@ -1,1 +1,7 @@
-{}
+{
+  "/slots/page": "app/slots/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/crash/page": "app/crash/page.js",
+  "/promotions/page": "app/promotions/page.js",
+  "/live-betting/page": "app/live-betting/page.js"
+}

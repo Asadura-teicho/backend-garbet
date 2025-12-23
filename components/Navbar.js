@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslation } from '@/hooks/useTranslation'
@@ -16,6 +16,7 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const userMenuRef = useRef(null)
 
   useEffect(() => {
     const updateTime = () => {
@@ -61,6 +62,25 @@ export default function Navbar() {
       window.removeEventListener('userDataUpdated', handleUserDataUpdate)
     }
   }, [pathname])
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false)
+      }
+    }
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('touchstart', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [showUserMenu])
   
   // Fetch fresh user data periodically to update balance
   useEffect(() => {
@@ -100,7 +120,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="flex flex-col sticky top-0 z-50 bg-[#151328]/90 backdrop-blur-sm">
+    <header className="flex flex-col sticky top-0 z-50 bg-[#151328]/95 backdrop-blur-md shadow-lg border-b border-white/5">
       {/* Top Bar */}
       <div className="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 lg:px-8 py-2">
         <div className="flex items-center gap-4">
@@ -137,10 +157,15 @@ export default function Navbar() {
               <NotificationDropdown userId={user?._id || user?.id} />
 
               {/* User Menu */}
-              <div className="relative">
+              <div className="relative" ref={userMenuRef}>
                 <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowUserMenu(!showUserMenu)
+                  }}
                   className="flex items-center gap-2 rounded h-9 px-3 bg-[#2b284e] text-white text-xs font-bold hover:bg-[#3a376a] transition-colors"
+                  aria-expanded={showUserMenu}
+                  aria-haspopup="true"
                 >
                   <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-7" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD_Dqon_1r08olFx9dGrieAk2FkxXdxlY_aVC96bO-COx1kf4TE6RT2zvFYTnBerRh1dbUvqTXwacCTwfYwr9-WG58W72qmIaKv93ik0_SJ55IN2zR7sobveE-fk2ed44m2aPMMlvJMYVo31_fjYj3LzQtjA4lNHc5CyAhMwXIVoX-cHiZst3G6McMDdtmWY47YTEfIPeW_C5DNSH4R7JuaHK1bRHd5M8TnxjBz5ceOS5BWyKZFaxCEIodf2NJmbeWYKvZQE-d4j1c")' }}></div>
                   <span className="hidden sm:block truncate max-w-[100px]">{user?.username || user?.firstName || 'User'}</span>
@@ -149,7 +174,7 @@ export default function Navbar() {
 
                 {/* Dropdown Menu */}
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-lg bg-[#1f1d37] border border-white/10 shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-48 rounded-lg bg-[#1f1d37] border border-white/10 shadow-xl z-[60] animate-fade-in">
                     <div className="p-3 border-b border-white/10">
                       <p className="text-white text-sm font-bold">{user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}</p>
                       <p className="text-white/60 text-xs">{user?.email}</p>
@@ -213,9 +238,20 @@ export default function Navbar() {
             </div>
           </div>
           <button
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            onClick={(e) => {
+              e.stopPropagation()
+              const newState = !showMobileMenu
+              setShowMobileMenu(newState)
+              // Prevent body scroll when mobile menu is open
+              if (newState) {
+                document.body.classList.add('mobile-menu-open')
+              } else {
+                document.body.classList.remove('mobile-menu-open')
+              }
+            }}
             className="lg:hidden flex items-center justify-center h-9 w-9 text-white hover:bg-white/10 rounded transition-colors"
             aria-label="Toggle menu"
+            aria-expanded={showMobileMenu}
           >
             <span className="material-symbols-outlined">{showMobileMenu ? 'close' : 'menu'}</span>
           </button>
@@ -224,11 +260,14 @@ export default function Navbar() {
 
       {/* Mobile Navigation Menu */}
       {showMobileMenu && (
-        <div className="lg:hidden border-t border-white/10 bg-[#1f1d37]">
+        <div className="lg:hidden border-t border-white/10 bg-[#1f1d37] animate-slide-in-left">
           <nav className="flex flex-col py-2">
             <Link
               href="/promotions"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/promotions') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">military_tech</span>
@@ -236,7 +275,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/live-betting"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/live-betting') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">bolt</span>
@@ -244,7 +286,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/sports"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/sports') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">sports_soccer</span>
@@ -252,7 +297,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/slots"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/slots') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">casino</span>
@@ -260,7 +308,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/live-casino"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/live-casino') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">playing_cards</span>
@@ -268,7 +319,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/dice-roll"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/dice-roll') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">casino</span>
@@ -276,7 +330,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/crash"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/crash') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">trending_up</span>
@@ -284,7 +341,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/tv-games"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/tv-games') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">live_tv</span>
@@ -292,7 +352,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/tournaments"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/tournaments') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">emoji_events</span>
@@ -300,7 +363,10 @@ export default function Navbar() {
             </Link>
             <Link
               href="/more"
-              onClick={() => setShowMobileMenu(false)}
+              onClick={() => {
+                setShowMobileMenu(false)
+                document.body.classList.remove('mobile-menu-open')
+              }}
               className={`px-4 py-2 text-sm ${isActive('/more') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
               <span className="material-symbols-outlined text-base align-middle mr-2">more_horiz</span>
@@ -311,64 +377,7 @@ export default function Navbar() {
       )}
 
       {/* Navigation Bar */}
-      {/* <nav className="hidden lg:flex p-3 items-center justify-center gap-8 border-t border-b border-white/10 px-4 sm:px-6 lg:px-8 bg-[#1f1d37]">
-        <Link 
-          href="/promotions" 
-          className={`secondary-nav-item ${isActive('/promotions') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base">military_tech</span> {t('common.promotions')}
-        </Link>
-        <Link 
-          href="/live-betting" 
-          className={`secondary-nav-item ${isActive('/live-betting') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/live-betting') ? "'FILL' 1" : "'FILL' 0" }}>bolt</span> {t('common.liveBet')}
-        </Link>
-        <Link 
-          href="/sports" 
-          className={`secondary-nav-item ${isActive('/sports') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/sports') ? "'FILL' 1" : "'FILL' 0" }}>sports_soccer</span> {t('common.sports')}
-        </Link>
-        <Link 
-          href="/slots" 
-          className={`secondary-nav-item ${isActive('/slots') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/slots') ? "'FILL' 1" : "'FILL' 0" }}>casino</span> {t('common.slotGames')}
-        </Link>
-        <Link 
-          href="/live-casino" 
-          className={`secondary-nav-item ${isActive('/live-casino') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/live-casino') ? "'FILL' 1" : "'FILL' 0" }}>playing_cards</span> {t('common.liveCasino')}
-        </Link>
-        <Link 
-          href="/crash" 
-          className={`secondary-nav-item ${isActive('/crash') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/crash') ? "'FILL' 1" : "'FILL' 0" }}>trending_up</span> {t('common.crash')}
-        </Link>
-        <Link 
-          href="/tv-games" 
-          className={`secondary-nav-item ${isActive('/tv-games') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/tv-games') ? "'FILL' 1" : "'FILL' 0" }}>live_tv</span> {t('common.tvGames')}
-        </Link>
-        <Link 
-          href="/tournaments" 
-          className={`secondary-nav-item ${isActive('/tournaments') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/tournaments') ? "'FILL' 1" : "'FILL' 0" }}>emoji_events</span> {t('common.tournaments')}
-        </Link>
-        <Link 
-          href="/more" 
-          className={`secondary-nav-item ${isActive('/more') ? 'active' : ''}`}
-        >
-          <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: isActive('/more') ? "'FILL' 1" : "'FILL' 0" }}>more_horiz</span> {t('common.more')}
-        </Link>
-      </nav> */}
-   {/* Navigation Bar */}
-<nav className="hidden lg:flex items-center justify-center gap-6 border-t border-b border-white/10 bg-[#1f1d37] px-4 sm:px-6 lg:px-8 py-3">
+      <nav className="hidden lg:flex items-center justify-center gap-6 border-t border-b border-white/10 bg-[#1f1d37] px-4 sm:px-6 lg:px-8 py-3">
   <Link
     href="/promotions"
     className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/promotions') ? 'active' : ''}`}
@@ -483,13 +492,13 @@ export default function Navbar() {
 </nav>
 
 
-      {/* Click outside to close menus */}
-      {(showUserMenu || showMobileMenu) && (
+      {/* Click outside to close mobile menu only */}
+      {showMobileMenu && (
         <div
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-40 lg:hidden"
           onClick={() => {
-            setShowUserMenu(false)
             setShowMobileMenu(false)
+            document.body.classList.remove('mobile-menu-open')
           }}
         />
       )}

@@ -19,6 +19,7 @@ const games = [
 ]
 
 export default function SlotsPage() {
+  const router = useRouter()
   const { t } = useTranslation()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedProvider, setSelectedProvider] = useState('all')
@@ -240,15 +241,16 @@ export default function SlotsPage() {
                         PLAY
                       </Link>
                     ) : game.name === 'Sweet Bonanza' ? (
-                      <Link
-                        href="/sweet-bonanza"
+                      <button
                         onClick={(e) => {
+                          e.preventDefault()
                           e.stopPropagation()
+                          router.push('/sweet-bonanza')
                         }}
-                        className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400"
+                        className="opacity-0 group-hover:opacity-100 bg-primary text-black px-4 py-2 rounded-lg font-bold text-sm transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 hover:bg-yellow-400 cursor-pointer"
                       >
                         PLAY
-                      </Link>
+                      </button>
                     ) : (
                       <Link
                         href={`/slots?game=${encodeURIComponent(game.name || game.id || '')}`}

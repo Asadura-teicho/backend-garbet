@@ -1,7 +1,7 @@
 {
-  "/slots/page": "app/slots/page.js",
+  "/page": "app/page.js",
   "/sweet-bonanza/page": "app/sweet-bonanza/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/deposit/page": "app/deposit/page.js",
-  "/sports/page": "app/sports/page.js"
+  "/auth/login/page": "app/auth/login/page.js",
+  "/slots/page": "app/slots/page.js"
 }

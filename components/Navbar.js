@@ -362,7 +362,7 @@ export default function Navbar() {
               }}
               className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/dice-roll') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-lg flex-shrink-0">casino</span>
+              <span className="material-symbols-outlined text-lg flex-shrink-0">sports_esports</span>
               <span className="truncate flex-1">Dice Roll</span>
             </Link>
             <Link

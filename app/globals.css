@@ -310,6 +310,8 @@ select:focus {
   /* Prevent body scroll when mobile menu is open */
   body.mobile-menu-open {
     overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
   
   /* Better touch targets on mobile */
@@ -322,6 +324,41 @@ select:focus {
   .dropdown-menu {
     @apply fixed top-auto bottom-0 left-0 right-0 max-h-[60vh] rounded-t-xl rounded-b-none;
     @apply border-b-0 border-t border-l border-r;
+  }
+  
+  /* Navbar mobile improvements */
+  .secondary-nav-item {
+    @apply px-3 py-2 text-xs;
+  }
+  
+  /* Ensure proper icon alignment in mobile menu */
+  nav a, nav button {
+    @apply flex items-center;
+  }
+  
+  nav a .material-symbols-outlined,
+  nav button .material-symbols-outlined {
+    @apply flex-shrink-0;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  /* Smaller text and spacing for very small screens */
+  .secondary-nav-item {
+    @apply px-2 py-1.5 text-xs;
+  }
+  
+  /* Ensure icons don't shrink */
+  .material-symbols-outlined {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 481px) and (max-width: 640px) {
+  .secondary-nav-item {
+    @apply px-3 py-2 text-sm;
   }
 }
 

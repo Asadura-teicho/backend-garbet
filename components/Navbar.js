@@ -122,62 +122,65 @@ export default function Navbar() {
   return (
     <header className="flex flex-col sticky top-0 z-50 bg-[#151328]/95 backdrop-blur-md shadow-lg border-b border-white/5">
       {/* Top Bar */}
-      <div className="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 lg:px-8 py-2">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <h2 className="text-white text-2xl font-bold leading-tight tracking-[-0.015em] italic">Garbet</h2>
+      <div className="flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 sm:py-2">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <Link href="/" className="flex items-center">
+            <h2 className="text-white text-xl sm:text-2xl font-bold leading-tight tracking-[-0.015em] italic whitespace-nowrap">Garbet</h2>
           </Link>
         </div>
         {isLoggedIn && (
-          <div className="hidden md:flex items-center gap-2">
-            <Link href="/deposit" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-4 bg-green-500 text-white text-xs font-bold leading-normal tracking-wide hover:bg-green-600 transition-all gap-1">
-              <span className="material-symbols-outlined text-base">account_balance_wallet</span>
-              <span className="truncate">{t('common.depositButton')}</span>
+          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+            <Link href="/deposit" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-3 sm:px-4 bg-green-500 text-white text-xs font-bold leading-normal tracking-wide hover:bg-green-600 transition-all gap-1.5">
+              <span className="material-symbols-outlined text-sm sm:text-base flex-shrink-0">account_balance_wallet</span>
+              <span className="truncate hidden sm:inline">{t('common.depositButton')}</span>
             </Link>
-            <Link href="/bonuses" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-4 bg-yellow-500 text-black text-xs font-bold leading-normal tracking-wide hover:bg-yellow-600 transition-colors gap-1">
-              <span className="material-symbols-outlined text-base">star</span>
-              <span className="truncate">{t('common.bonusesButton')}</span>
+            <Link href="/bonuses" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-3 sm:px-4 bg-yellow-500 text-black text-xs font-bold leading-normal tracking-wide hover:bg-yellow-600 transition-colors gap-1.5">
+              <span className="material-symbols-outlined text-sm sm:text-base flex-shrink-0">star</span>
+              <span className="truncate hidden sm:inline">{t('common.bonusesButton')}</span>
             </Link>
-            {/* <Link href="/messages" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-4 bg-[#2b284e] text-white text-xs font-bold leading-normal tracking-wide hover:bg-[#3a376a] transition-colors gap-1">
-              <span className="material-symbols-outlined text-base">email</span>
-              <span className="truncate">{t('common.messagesButton')}</span>
-            </Link> */}
           </div>
         )}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-auto">
           {isLoggedIn ? (
             <>
-              {/* User Balance */}
+              {/* User Balance - Mobile */}
+              <div className="md:hidden flex flex-col items-end mr-1 sm:mr-2">
+                <span className="text-[10px] sm:text-xs text-white/70 leading-tight">{t('common.balance')}</span>
+                <span className="font-bold text-white text-xs sm:text-sm leading-tight">₺{user?.balance?.toFixed(2) || '0.00'}</span>
+              </div>
+              {/* User Balance - Desktop */}
               <div className="hidden md:flex flex-col items-end mr-2">
                 <span className="text-xs text-white/70">{t('common.balance')}</span>
                 <span className="font-bold text-white text-sm">₺{user?.balance?.toFixed(2) || '0.00'}</span>
               </div>
 
               {/* Notifications */}
-              <NotificationDropdown userId={user?._id || user?.id} />
+              <div className="flex-shrink-0">
+                <NotificationDropdown userId={user?._id || user?.id} />
+              </div>
 
               {/* User Menu */}
-              <div className="relative" ref={userMenuRef}>
+              <div className="relative flex-shrink-0" ref={userMenuRef}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     setShowUserMenu(!showUserMenu)
                   }}
-                  className="flex items-center gap-2 rounded h-9 px-3 bg-[#2b284e] text-white text-xs font-bold hover:bg-[#3a376a] transition-colors"
+                  className="flex items-center gap-1.5 sm:gap-2 rounded h-9 px-2 sm:px-3 bg-[#2b284e] text-white text-xs font-bold hover:bg-[#3a376a] transition-colors min-w-[36px] sm:min-w-auto"
                   aria-expanded={showUserMenu}
                   aria-haspopup="true"
                 >
-                  <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-7" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD_Dqon_1r08olFx9dGrieAk2FkxXdxlY_aVC96bO-COx1kf4TE6RT2zvFYTnBerRh1dbUvqTXwacCTwfYwr9-WG58W72qmIaKv93ik0_SJ55IN2zR7sobveE-fk2ed44m2aPMMlvJMYVo31_fjYj3LzQtjA4lNHc5CyAhMwXIVoX-cHiZst3G6McMDdtmWY47YTEfIPeW_C5DNSH4R7JuaHK1bRHd5M8TnxjBz5ceOS5BWyKZFaxCEIodf2NJmbeWYKvZQE-d4j1c")' }}></div>
-                  <span className="hidden sm:block truncate max-w-[100px]">{user?.username || user?.firstName || 'User'}</span>
-                  <span className="material-symbols-outlined text-base">{showUserMenu ? 'expand_less' : 'expand_more'}</span>
+                  <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-6 sm:size-7 flex-shrink-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD_Dqon_1r08olFx9dGrieAk2FkxXdxlY_aVC96bO-COx1kf4TE6RT2zvFYTnBerRh1dbUvqTXwacCTwfYwr9-WG58W72qmIaKv93ik0_SJ55IN2zR7sobveE-fk2ed44m2aPMMlvJMYVo31_fjYj3LzQtjA4lNHc5CyAhMwXIVoX-cHiZst3G6McMDdtmWY47YTEfIPeW_C5DNSH4R7JuaHK1bRHd5M8TnxjBz5ceOS5BWyKZFaxCEIodf2NJmbeWYKvZQE-d4j1c")' }}></div>
+                  <span className="hidden sm:block truncate max-w-[80px] md:max-w-[100px]">{user?.username || user?.firstName || 'User'}</span>
+                  <span className="material-symbols-outlined text-sm sm:text-base flex-shrink-0">{showUserMenu ? 'expand_less' : 'expand_more'}</span>
                 </button>
 
                 {/* Dropdown Menu */}
                 {showUserMenu && (
                   <div className="absolute right-0 mt-2 w-48 rounded-lg bg-[#1f1d37] border border-white/10 shadow-xl z-[60] animate-fade-in">
                     <div className="p-3 border-b border-white/10">
-                      <p className="text-white text-sm font-bold">{user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}</p>
-                      <p className="text-white/60 text-xs">{user?.email}</p>
+                      <p className="text-white text-sm font-bold truncate">{user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.username || 'User'}</p>
+                      <p className="text-white/60 text-xs truncate">{user?.email}</p>
                     </div>
                     <div className="py-1">
                       <Link
@@ -185,16 +188,16 @@ export default function Navbar() {
                         onClick={() => setShowUserMenu(false)}
                         className="flex items-center gap-2 px-3 py-2 text-white text-sm hover:bg-white/10 transition-colors"
                       >
-                        <span className="material-symbols-outlined text-base">dashboard</span>
-                        Dashboard
+                        <span className="material-symbols-outlined text-base flex-shrink-0">dashboard</span>
+                        <span className="truncate">Dashboard</span>
                       </Link>
                       <Link
                         href="/profile"
                         onClick={() => setShowUserMenu(false)}
                         className="flex items-center gap-2 px-3 py-2 text-white text-sm hover:bg-white/10 transition-colors"
                       >
-                        <span className="material-symbols-outlined text-base">person</span>
-                        Profile
+                        <span className="material-symbols-outlined text-base flex-shrink-0">person</span>
+                        <span className="truncate">Profile</span>
                       </Link>
                       {user?.role === 'admin' || user?.role === 'super_admin' || user?.role === 'operator' ? (
                         <Link
@@ -202,8 +205,8 @@ export default function Navbar() {
                           onClick={() => setShowUserMenu(false)}
                           className="flex items-center gap-2 px-3 py-2 text-white text-sm hover:bg-white/10 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-base">admin_panel_settings</span>
-                          Admin Panel
+                          <span className="material-symbols-outlined text-base flex-shrink-0">admin_panel_settings</span>
+                          <span className="truncate">Admin Panel</span>
                         </Link>
                       ) : null}
                       <button
@@ -213,8 +216,8 @@ export default function Navbar() {
                         }}
                         className="w-full flex items-center gap-2 px-3 py-2 text-red-400 text-sm hover:bg-red-500/10 transition-colors text-left"
                       >
-                        <span className="material-symbols-outlined text-base">logout</span>
-                        Logout
+                        <span className="material-symbols-outlined text-base flex-shrink-0">logout</span>
+                        <span className="truncate">Logout</span>
                       </button>
                     </div>
                   </div>
@@ -223,18 +226,18 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/auth/login" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-4 bg-blue-600 text-white text-xs font-bold leading-normal tracking-wide hover:bg-blue-700 transition-all">
+              <Link href="/auth/login" className="flex min-w-[70px] sm:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-3 sm:px-4 bg-blue-600 text-white text-xs font-bold leading-normal tracking-wide hover:bg-blue-700 transition-all">
                 <span className="truncate">{t('common.signIn')}</span>
               </Link>
-              <Link href="/auth/register" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-4 bg-gray-600 text-white text-xs font-bold leading-normal tracking-wide hover:bg-gray-700 transition-colors">
+              <Link href="/auth/register" className="flex min-w-[70px] sm:min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-3 sm:px-4 bg-gray-600 text-white text-xs font-bold leading-normal tracking-wide hover:bg-gray-700 transition-colors">
                 <span className="truncate">{t('common.signUp')}</span>
               </Link>
             </>
           )}
-          <div className="hidden sm:flex items-center gap-4 pl-2">
-            <div className="flex items-center gap-1.5 text-white/80 text-xs">
-              <span className="material-symbols-outlined text-base">schedule</span>
-              <span>{currentTime}</span>
+          <div className="hidden xs:flex sm:flex items-center gap-2 sm:gap-4 pl-1 sm:pl-2 flex-shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-white/80 text-[10px] sm:text-xs">
+              <span className="material-symbols-outlined text-sm sm:text-base flex-shrink-0">schedule</span>
+              <span className="whitespace-nowrap">{currentTime}</span>
             </div>
           </div>
           <button
@@ -249,11 +252,11 @@ export default function Navbar() {
                 document.body.classList.remove('mobile-menu-open')
               }
             }}
-            className="lg:hidden flex items-center justify-center h-9 w-9 text-white hover:bg-white/10 rounded transition-colors"
+            className="lg:hidden flex items-center justify-center h-9 w-9 text-white hover:bg-white/10 rounded transition-colors flex-shrink-0 ml-1"
             aria-label="Toggle menu"
             aria-expanded={showMobileMenu}
           >
-            <span className="material-symbols-outlined">{showMobileMenu ? 'close' : 'menu'}</span>
+            <span className="material-symbols-outlined text-xl sm:text-2xl">{showMobileMenu ? 'close' : 'menu'}</span>
           </button>
         </div>
       </div>
@@ -273,6 +276,35 @@ export default function Navbar() {
       {showMobileMenu && (
         <div className="lg:hidden border-t border-white/10 bg-[#1f1d37] animate-slide-in-left relative z-[50]" onClick={(e) => e.stopPropagation()}>
           <nav className="flex flex-col py-2">
+            {isLoggedIn && (
+              <>
+                <Link
+                  href="/deposit"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowMobileMenu(false)
+                    document.body.classList.remove('mobile-menu-open')
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 mx-2 mb-2 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium transition-colors cursor-pointer border border-green-500/30"
+                >
+                  <span className="material-symbols-outlined text-lg flex-shrink-0">account_balance_wallet</span>
+                  <span className="truncate">{t('common.depositButton')}</span>
+                </Link>
+                <Link
+                  href="/bonuses"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowMobileMenu(false)
+                    document.body.classList.remove('mobile-menu-open')
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 mx-2 mb-2 rounded-lg bg-yellow-500/20 text-yellow-400 text-sm font-medium transition-colors cursor-pointer border border-yellow-500/30"
+                >
+                  <span className="material-symbols-outlined text-lg flex-shrink-0">star</span>
+                  <span className="truncate">{t('common.bonusesButton')}</span>
+                </Link>
+                <div className="border-t border-white/10 my-2"></div>
+              </>
+            )}
             <Link
               href="/promotions"
               onClick={(e) => {
@@ -280,10 +312,10 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/promotions') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/promotions') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">military_tech</span>
-              {t('common.promotions')}
+              <span className="material-symbols-outlined text-lg flex-shrink-0">{isActive('/promotions') ? 'military_tech' : 'military_tech'}</span>
+              <span className="truncate flex-1">{t('common.promotions')}</span>
             </Link>
             <Link
               href="/live-betting"
@@ -292,10 +324,10 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/live-betting') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/live-betting') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">bolt</span>
-              {t('common.liveBet')}
+              <span className="material-symbols-outlined text-lg flex-shrink-0">bolt</span>
+              <span className="truncate flex-1">{t('common.liveBet')}</span>
             </Link>
             <Link
               href="/sports"
@@ -304,10 +336,10 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/sports') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/sports') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">sports_soccer</span>
-              {t('common.sports')}
+              <span className="material-symbols-outlined text-lg flex-shrink-0">sports_soccer</span>
+              <span className="truncate flex-1">{t('common.sports')}</span>
             </Link>
             <Link
               href="/slots"
@@ -316,25 +348,11 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/slots') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/slots') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">casino</span>
-              {t('common.slotGames')}
+              <span className="material-symbols-outlined text-lg flex-shrink-0">casino</span>
+              <span className="truncate flex-1">{t('common.slotGames')}</span>
             </Link>
-            {/* COMMENTED OUT - Live Casino Disabled
-            <Link
-              href="/live-casino"
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowMobileMenu(false)
-                document.body.classList.remove('mobile-menu-open')
-              }}
-              className={`px-4 py-2 text-sm ${isActive('/live-casino') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
-            >
-              <span className="material-symbols-outlined text-base align-middle mr-2">playing_cards</span>
-              {t('common.liveCasino')}
-            </Link>
-            */}
             <Link
               href="/dice-roll"
               onClick={(e) => {
@@ -342,10 +360,10 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/dice-roll') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/dice-roll') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">casino</span>
-              Dice Roll
+              <span className="material-symbols-outlined text-lg flex-shrink-0">casino</span>
+              <span className="truncate flex-1">Dice Roll</span>
             </Link>
             <Link
               href="/crash"
@@ -354,10 +372,10 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/crash') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/crash') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">trending_up</span>
-              {t('common.crash')}
+              <span className="material-symbols-outlined text-lg flex-shrink-0">trending_up</span>
+              <span className="truncate flex-1">{t('common.crash')}</span>
             </Link>
             <Link
               href="/tv-games"
@@ -366,10 +384,10 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/tv-games') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/tv-games') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">live_tv</span>
-              {t('common.tvGames')}
+              <span className="material-symbols-outlined text-lg flex-shrink-0">live_tv</span>
+              <span className="truncate flex-1">{t('common.tvGames')}</span>
             </Link>
             <Link
               href="/tournaments"
@@ -378,10 +396,10 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/tournaments') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/tournaments') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">emoji_events</span>
-              {t('common.tournaments')}
+              <span className="material-symbols-outlined text-lg flex-shrink-0">emoji_events</span>
+              <span className="truncate flex-1">{t('common.tournaments')}</span>
             </Link>
             <Link
               href="/more"
@@ -390,10 +408,10 @@ export default function Navbar() {
                 setShowMobileMenu(false)
                 document.body.classList.remove('mobile-menu-open')
               }}
-              className={`px-4 py-2 text-sm transition-colors cursor-pointer ${isActive('/more') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
+              className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer min-h-[48px] ${isActive('/more') ? 'text-[#0dccf2] bg-[#0dccf2]/10' : 'text-white/80 hover:bg-white/10'}`}
             >
-              <span className="material-symbols-outlined text-base align-middle mr-2">more_horiz</span>
-              {t('common.more')}
+              <span className="material-symbols-outlined text-lg flex-shrink-0">more_horiz</span>
+              <span className="truncate flex-1">{t('common.more')}</span>
             </Link>
           </nav>
         </div>

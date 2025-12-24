@@ -419,7 +419,17 @@ function SweetBonanzaPage() {
 
       // Refresh user data from server to ensure sync with main balance
       // This ensures the balance displayed is the actual deposited balance
-      await fetchUserData()
+      // Use setTimeout to prevent race conditions and allow UI to update first
+      setTimeout(async () => {
+        try {
+          await fetchUserData()
+        } catch (fetchErr) {
+          // Silently handle fetch errors - balance is already updated from game response
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Sweet Bonanza - Error refreshing user data:', fetchErr)
+          }
+        }
+      }, 500)
     } catch (err) {
       // Stop animations on error
       setReelSpeeds([0, 0, 0, 0, 0, 0])

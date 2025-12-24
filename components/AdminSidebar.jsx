@@ -15,6 +15,7 @@ export default function AdminSidebar() {
     { id: 'users', label: t('admin.users'), icon: 'group', href: '/admin/users' },
     { id: 'kyc', label: t('admin.kyc'), icon: 'badge', href: '/admin/kyc' },
     { id: 'games', label: t('admin.games'), icon: 'gamepad', href: '/admin/games' },
+    { id: 'dice-games', label: 'Dice Games', icon: 'sports_esports', href: '/admin/dice-games' },
     { id: 'betting', label: t('admin.betting'), icon: 'sports_soccer', href: '/admin/betting' },
     { id: 'promotions', label: t('admin.promotions'), icon: 'campaign', href: '/admin/promotions' },
     { id: 'deposits', label: t('admin.deposits'), icon: 'arrow_downward', href: '/admin/deposits' },
@@ -63,7 +64,7 @@ export default function AdminSidebar() {
             href={item.href}
             onClick={() => setIsMobileOpen(false)}
             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-              pathname === item.href || (item.id === 'dashboard' && pathname === '/admin')
+              pathname === item.href || (item.id === 'dashboard' && pathname === '/admin') || pathname.startsWith(item.href + '/')
                 ? 'bg-primary/20 text-primary'
                 : 'text-gray-300 hover:bg-white/10'
             }`}

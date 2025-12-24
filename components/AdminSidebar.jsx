@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslation } from '@/hooks/useTranslation'
@@ -24,13 +24,30 @@ export default function AdminSidebar() {
     { id: 'content', label: t('admin.content'), icon: 'wysiwyg', href: '/admin/content' },
   ]
 
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (isMobileOpen) {
+        document.body.style.overflow = 'hidden'
+      } else {
+        document.body.style.overflow = ''
+      }
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        document.body.style.overflow = ''
+      }
+    }
+  }, [isMobileOpen])
+
   return (
     <>
       {/* Mobile Hamburger Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-background-dark border border-surface rounded-lg text-white hover:bg-white/10 transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-[100] p-2 bg-background-dark border border-surface rounded-lg text-white hover:bg-white/10 transition-colors shadow-lg"
         aria-label="Toggle sidebar"
+        aria-expanded={isMobileOpen}
       >
         <span className="material-symbols-outlined">{isMobileOpen ? 'close' : 'menu'}</span>
       </button>
@@ -38,23 +55,34 @@ export default function AdminSidebar() {
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-[55]"
+          className="lg:hidden fixed inset-0 bg-black/60 z-[90] backdrop-blur-sm"
           onClick={() => setIsMobileOpen(false)}
+          aria-hidden="true"
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed left-0 top-0 h-screen w-64 flex flex-col bg-background-dark border-r border-surface p-4 z-40 transition-transform duration-300 ${
+      <aside className={`fixed left-0 top-0 h-screen w-64 flex flex-col bg-background-dark border-r border-surface p-4 z-[95] transition-transform duration-300 ease-in-out ${
         isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
-      <div className="flex items-center gap-3 mb-8 px-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-          <span className="material-symbols-outlined text-black">casino</span>
+      <div className="flex items-center justify-between mb-8 px-2">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+            <span className="material-symbols-outlined text-black">casino</span>
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-base font-bold text-white">{t('admin.title')}</h1>
+            <p className="text-sm text-gray-400">{t('admin.management')}</p>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <h1 className="text-base font-bold text-white">{t('admin.title')}</h1>
-          <p className="text-sm text-gray-400">{t('admin.management')}</p>
-        </div>
+        {/* Close button for mobile */}
+        <button
+          onClick={() => setIsMobileOpen(false)}
+          className="lg:hidden p-1 text-gray-400 hover:text-white transition-colors"
+          aria-label="Close sidebar"
+        >
+          <span className="material-symbols-outlined text-xl">close</span>
+        </button>
       </div>
 
       <nav className="flex flex-col gap-2">

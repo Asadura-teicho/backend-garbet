@@ -1348,8 +1348,4 @@ function SweetBonanzaPage() {
   )
 }
 
-<<<<<<< HEAD
 export default SweetBonanzaPage
-=======
-export default SweetBonanzaPage
->>>>>>> 05189b5 (Your commit message)

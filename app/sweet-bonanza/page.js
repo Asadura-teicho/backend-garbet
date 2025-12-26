@@ -824,30 +824,18 @@ function SweetBonanzaPage() {
           )}
 
           {/* Game Title - SWEET BONANZA - Exact Match from Screenshot */}
-<<<<<<< HEAD
           <div className="w-full max-w-[1400px] mb-2 text-center relative z-20 px-2 md:px-4">
             <h1 className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-black mb-1 leading-tight" style={{
               fontFamily: 'Arial Black, sans-serif',
               fontWeight: 900,
               textShadow: '3px 3px 0px #FFFFFF, 5px 5px 0px rgba(0,0,0,0.2), 0 0 15px rgba(255,255,255,0.6)',
-=======
-          <div className="w-full max-w-[1400px] mb-2 text-center relative z-20 px-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-1 leading-tight" style={{
-              fontFamily: 'Arial Black, sans-serif',
-              fontWeight: 900,
-              textShadow: '4px 4px 0px #FFFFFF, 6px 6px 0px rgba(0,0,0,0.2), 0 0 20px rgba(255,255,255,0.6)',
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
               background: 'linear-gradient(135deg, #FF1493 0%, #FFD700 20%, #FF69B4 40%, #FFD700 60%, #FF1493 80%, #FFD700 100%)',
               backgroundSize: '300% 300%',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
               animation: 'gradientShift 4s ease infinite',
-<<<<<<< HEAD
               letterSpacing: '1px',
-=======
-              letterSpacing: '2px',
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
               lineHeight: '1.1'
             }}>
               SWEET BONANZA
@@ -872,16 +860,11 @@ function SweetBonanzaPage() {
 
 
           {/* Game Area - Exact Layout Match from Screenshot */}
-<<<<<<< HEAD
-          <div className="w-full max-w-[95%] md:max-w-[70%] relative z-20 px-2 md:px-4 flex-1 flex flex-col min-h-0" style={{ transform: 'scale(1)', transformOrigin: 'center top' }}>
-=======
-          <div className="w-full max-w-[70%] relative z-20 px-4 flex-1 flex flex-col min-h-0" style={{ transform: 'scale(0.8)', transformOrigin: 'center top' }}>
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
+          <div className="w-full max-w-[95%] md:max-w-[70%] lg:max-w-[55%] xl:max-w-[60%] relative z-20 px-2 md:px-4 flex-1 flex flex-col min-h-0 game-area-laptop" style={{ transform: 'scale(1)', transformOrigin: 'center top' }}>
             <div className="relative flex flex-col items-center flex-1 justify-between min-h-0 w-full">
               {/* Reels Area - Full Width */}
               <div className="w-full flex-1 flex flex-col min-h-0" style={{ minHeight: '0' }}>
                 {/* Multiplier Banner - Exact Match */}
-<<<<<<< HEAD
                 <div className="mb-2 md:mb-3 rounded-lg md:rounded-xl p-2 md:p-3 text-center shadow-xl md:shadow-2xl" style={{
                   background: 'linear-gradient(135deg, #FF69B4 0%, #FFD700 30%, #FF69B4 60%, #FFD700 100%)',
                   border: '2px solid #FFFFFF',
@@ -890,16 +873,6 @@ function SweetBonanzaPage() {
                   <p className="text-white font-black text-xs md:text-sm lg:text-base xl:text-lg" style={{ 
                     textShadow: '2px 2px 4px rgba(0,0,0,0.7), 0 0 10px rgba(255,255,255,0.4)',
                     letterSpacing: '0.5px',
-=======
-                <div className="mb-3 rounded-xl p-3 text-center shadow-2xl" style={{
-                  background: 'linear-gradient(135deg, #FF69B4 0%, #FFD700 30%, #FF69B4 60%, #FFD700 100%)',
-                  border: '3px solid #FFFFFF',
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.4), inset 0 3px 8px rgba(255,255,255,0.4), inset 0 -2px 5px rgba(0,0,0,0.2)'
-                }}>
-                  <p className="text-white font-black text-sm md:text-base lg:text-lg" style={{ 
-                    textShadow: '3px 3px 6px rgba(0,0,0,0.7), 0 0 15px rgba(255,255,255,0.4)',
-                    letterSpacing: '1.5px',
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                     fontWeight: 900
                   }}>
                     RANDOM MULTIPLIER UP TO 100X IN FREE SPINS
@@ -907,8 +880,7 @@ function SweetBonanzaPage() {
                 </div>
 
                 {/* Reels Container - 6 columns x 5 rows Grid - Light Purple/Cloudy Background - Exact Match */}
-<<<<<<< HEAD
-                <div className="relative rounded-xl md:rounded-2xl p-2 md:p-3 lg:p-4 shadow-xl md:shadow-2xl mx-auto w-full" style={{
+                <div className="relative rounded-xl md:rounded-2xl p-1 md:p-2 lg:p-3 shadow-xl md:shadow-2xl mx-auto w-2/3" style={{
                   background: 'linear-gradient(135deg, #E8D5F7 0%, #F5EBFF 30%, #E8D5F7 60%, #F0E0FF 100%)',
                   border: '3px solid #FFFFFF',
                   boxShadow: '0 6px 20px rgba(0,0,0,0.25), inset 0 2px 8px rgba(255,255,255,0.6)',
@@ -921,23 +893,6 @@ function SweetBonanzaPage() {
                   }}></div>
                   <div className="grid grid-cols-6 gap-1 md:gap-2 relative z-10 w-full" style={{
                     aspectRatio: '6/5'
-=======
-                <div className="relative rounded-2xl p-3 md:p-4 shadow-2xl mx-auto" style={{
-                  background: 'linear-gradient(135deg, #E8D5F7 0%, #F5EBFF 30%, #E8D5F7 60%, #F0E0FF 100%)',
-                  border: '4px solid #FFFFFF',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.25), inset 0 2px 10px rgba(255,255,255,0.6)',
-                  position: 'relative',
-                  overflow: 'visible',
-                  width: '70%',
-                  maxWidth: '100%'
-                }}>
-                  {/* Cloudy effect overlay */}
-                  <div className="absolute inset-0 opacity-30 pointer-events-none" style={{
-                    background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(255,255,255,0.3) 0%, transparent 50%)'
-                  }}></div>
-                  <div className="grid grid-cols-6 gap-2 relative z-10 w-full p-1" style={{
-                    gridTemplateRows: 'repeat(5, minmax(80px, auto))'
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                   }}>
                   {reels.map((reel, reelIndex) =>
                       reel.map((symbol, symbolIndex) => {
@@ -946,7 +901,6 @@ function SweetBonanzaPage() {
                         return (
                           <div
                             key={`${reelIndex}-${symbolIndex}`}
-<<<<<<< HEAD
                               className={`aspect-square flex items-center justify-center rounded-lg md:rounded-xl border-2 md:border-3 transition-all duration-300 relative overflow-hidden ${
                               spinning && reelSpeed > 0
                                   ? 'bg-gradient-to-b from-purple-300 to-purple-400 border-purple-500'
@@ -965,39 +919,11 @@ function SweetBonanzaPage() {
                               animation: isWinning ? 'winningGlow 0.6s ease-in-out infinite' : undefined,
                                 background: !spinning && !isWinning ? 'linear-gradient(to bottom, #FFFFFF 0%, #F9FAFB 100%)' : undefined,
                                 fontSize: 'clamp(1rem, 4vw, 2.5rem)',
-=======
-                              className={`flex items-center justify-center rounded-xl border-3 transition-all duration-300 relative overflow-hidden ${
-                              spinning && reelSpeed > 0
-                                  ? 'bg-gradient-to-b from-purple-300 to-purple-400 border-purple-500'
-                                : isWinning
-                                  ? 'bg-gradient-to-b from-yellow-300 to-yellow-400 border-yellow-600 shadow-2xl shadow-yellow-500/70'
-                                  : 'bg-white border-gray-300 hover:border-pink-400'
-                            }`}
-                            style={{
-                                boxShadow: isWinning 
-                                  ? '0 0 25px rgba(255, 215, 0, 1), inset 0 2px 10px rgba(255,255,255,0.8)' 
-                                  : spinning && reelSpeed > 0
-                                  ? '0 3px 8px rgba(147, 51, 234, 0.3)'
-                                  : '0 3px 8px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.9)',
-                                borderWidth: '3px',
-                                borderColor: isWinning ? '#F59E0B' : spinning ? '#9333EA' : '#D1D5DB',
-                              animation: isWinning ? 'winningGlow 0.6s ease-in-out infinite' : undefined,
-                                background: !spinning && !isWinning ? 'linear-gradient(to bottom, #FFFFFF 0%, #F9FAFB 100%)' : undefined,
-                                fontSize: 'clamp(1.2rem, 3vw, 2.5rem)',
-                                minWidth: '0',
-                                minHeight: '0',
-                                width: '100%',
-                                height: '100%',
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                                 filter: spinning && reelSpeed > 0 ? 'blur(2px)' : 'none'
                             }}
                           >
                               <span className={`transition-all duration-300 relative z-10 ${isWinning ? 'scale-125' : ''}`} style={{
-<<<<<<< HEAD
                                 filter: isWinning ? 'drop-shadow(0 0 8px rgba(255,215,0,0.8))' : 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))',
-=======
-                                filter: isWinning ? 'drop-shadow(0 0 10px rgba(255,215,0,0.8))' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                                 display: 'block'
                               }}>
                               {symbol}
@@ -1033,40 +959,23 @@ function SweetBonanzaPage() {
                 </div> */}
 
                 {/* Bottom Controls Bar - Exact Match from Screenshot */}
-<<<<<<< HEAD
                 <div className="mt-2 md:mt-1 flex flex-col md:flex-row items-center justify-between w-full gap-2 md:gap-2 px-2 md:px-2 py-2 md:py-1.5" style={{
-=======
-                <div className="mt-1 flex items-center justify-between w-full gap-2 px-2 py-1.5" style={{
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                   background: 'rgba(0, 0, 0, 0.4)',
                   backdropFilter: 'blur(5px)',
                   borderRadius: '6px'
                 }}>
                   {/* Left Side - Credit, Bet, Icons - Exact Match */}
-<<<<<<< HEAD
                   <div className="flex items-center gap-2 md:gap-4 flex-wrap justify-center md:justify-start">
                     {/* Pragmatic Play Logo */}
                     <div className="text-white text-xs font-bold opacity-80 hidden md:block">PRAGMATIC PLAY</div>
-=======
-                  <div className="flex items-center gap-4">
-                    {/* Pragmatic Play Logo */}
-                    <div className="text-white text-xs font-bold opacity-80">PRAGMATIC PLAY</div>
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                     
                     {/* Info and Sound Icons */}
                     <button
                       onClick={() => setShowGameRules(true)}
-<<<<<<< HEAD
                       className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
                       title="Game Rules"
                     >
                       <span className="material-symbols-outlined text-white text-base md:text-lg">info</span>
-=======
-                      className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
-                      title="Game Rules"
-                    >
-                      <span className="material-symbols-outlined text-white text-lg">info</span>
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                     </button>
                     <button
                       onClick={() => {
@@ -1081,17 +990,10 @@ function SweetBonanzaPage() {
                           }
                         }
                       }}
-<<<<<<< HEAD
                       className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
                       title={soundEnabled && musicEnabled ? 'Mute' : 'Unmute'}
                     >
                       <span className="material-symbols-outlined text-white text-base md:text-lg">
-=======
-                      className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
-                      title={soundEnabled && musicEnabled ? 'Mute' : 'Unmute'}
-                    >
-                      <span className="material-symbols-outlined text-white text-lg">
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                         {soundEnabled && musicEnabled ? 'volume_up' : 'volume_off'}
                       </span>
                     </button>
@@ -1099,30 +1001,18 @@ function SweetBonanzaPage() {
                     {/* Credit/Balance */}
                     <div className="text-white font-bold">
                       <div className="text-xs opacity-80">KREDİ</div>
-<<<<<<< HEAD
                       <div className="text-xs md:text-sm">₺{typeof balance === 'number' && !isNaN(balance) ? balance.toFixed(2) : '0.00'}</div>
-=======
-                      <div className="text-sm">₺{typeof balance === 'number' && !isNaN(balance) ? balance.toFixed(2) : '0.00'}</div>
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                     </div>
                     
                     {/* Bet Amount */}
                     <div className="text-white font-bold">
                       <div className="text-xs opacity-80">BAHİS</div>
-<<<<<<< HEAD
                       <div className="text-xs md:text-sm">₺{parseFloat(betAmount) || 0}.00</div>
-=======
-                      <div className="text-sm">₺{parseFloat(betAmount) || 0}.00</div>
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                     </div>
                   </div>
 
                   {/* Center - Turbo Spin Instruction - Exact Match */}
-<<<<<<< HEAD
                   <div className="flex-1 text-center hidden md:block">
-=======
-                  <div className="flex-1 text-center">
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                     <p className="text-white text-xs font-medium opacity-90">
                       TURBO SPİN İÇİN BOŞLUK TUŞUNA BASILI TUTUN
                     </p>
@@ -1131,11 +1021,7 @@ function SweetBonanzaPage() {
                   {/* Right Side - Spin Button with +/- and Auto Play - Exact Match */}
                   <div className="flex flex-col items-center gap-2">
                     {/* Spin Button with +/- buttons */}
-<<<<<<< HEAD
                     <div className="flex items-center gap-1 md:gap-2">
-=======
-                    <div className="flex items-center gap-2">
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                       {/* Minus Button */}
                       <button
                         onClick={() => {
@@ -1144,11 +1030,7 @@ function SweetBonanzaPage() {
                           setBetAmount(newBet.toString())
                         }}
                         disabled={spinning || parseFloat(betAmount) <= 1}
-<<<<<<< HEAD
                         className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-base md:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center hover:scale-110 active:scale-95"
-=======
-                        className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center hover:scale-110 active:scale-95"
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                         title="Decrease Bet"
                         style={{
                           boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
@@ -1161,11 +1043,7 @@ function SweetBonanzaPage() {
                       <button
                         onClick={spinReels}
                         disabled={spinning || parseFloat(betAmount) <= 0 || parseFloat(betAmount) > balance}
-<<<<<<< HEAD
                         className={`relative w-16 h-16 md:w-20 md:h-20 rounded-full font-black transition-all transform overflow-hidden group ${
-=======
-                        className={`relative w-20 h-20 rounded-full font-black transition-all transform overflow-hidden group ${
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                           spinning
                             ? 'bg-gray-500 cursor-not-allowed'
                             : 'bg-black hover:scale-110 active:scale-95 text-white'
@@ -1173,32 +1051,19 @@ function SweetBonanzaPage() {
                         style={{
                           boxShadow: spinning 
                             ? 'none' 
-<<<<<<< HEAD
                             : '0 8px 25px rgba(0,0,0,0.5), inset 0 2px 12px rgba(255,255,255,0.15), inset 0 -2px 8px rgba(0,0,0,0.3)',
                           border: '2px solid #FFFFFF',
-=======
-                            : '0 10px 30px rgba(0,0,0,0.5), inset 0 3px 15px rgba(255,255,255,0.15), inset 0 -3px 10px rgba(0,0,0,0.3)',
-                          border: '3px solid #FFFFFF',
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                           background: spinning ? '#6B7280' : 'linear-gradient(135deg, #000000 0%, #1F2937 50%, #000000 100%)'
                         }}
                       >
                         {spinning ? (
                           <span className="flex items-center justify-center h-full">
-<<<<<<< HEAD
                             <span className="inline-block w-4 h-4 md:w-5 md:h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-=======
-                            <span className="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                           </span>
                         ) : (
                           <>
                             <span className="relative z-10 flex items-center justify-center h-full">
-<<<<<<< HEAD
                               <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-=======
-                              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                               </svg>
                             </span>
@@ -1216,11 +1081,7 @@ function SweetBonanzaPage() {
                           setBetAmount(newBet.toString())
                         }}
                         disabled={spinning || parseFloat(betAmount) >= parseFloat(balance)}
-<<<<<<< HEAD
                         className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-base md:text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center hover:scale-110 active:scale-95"
-=======
-                        className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center hover:scale-110 active:scale-95"
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                         title="Increase Bet"
                         style={{
                           boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
@@ -1234,11 +1095,7 @@ function SweetBonanzaPage() {
                     <button
                       onClick={() => handleAutoSpin(10)}
                       disabled={spinning || autoSpin || parseFloat(betAmount) <= 0 || parseFloat(betAmount) > balance}
-<<<<<<< HEAD
                       className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-white font-bold text-xs transition-all ${
-=======
-                      className={`px-4 py-2 rounded-lg text-white font-bold text-xs transition-all ${
->>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
                         autoSpin 
                           ? 'bg-red-600 hover:bg-red-700' 
                           : 'bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed'
@@ -1425,6 +1282,66 @@ function SweetBonanzaPage() {
           .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(to bottom, #ff8fb3, #a855f7);
           }
+          
+          /* Mobile Optimizations */
+          @media (max-width: 640px) {
+            /* Ensure touch targets are at least 44x44px */
+            button {
+              min-height: 44px;
+              min-width: 44px;
+            }
+            
+            /* Improve readability on small screens */
+            body {
+              -webkit-text-size-adjust: 100%;
+              -moz-text-size-adjust: 100%;
+              text-size-adjust: 100%;
+            }
+            
+            /* Prevent horizontal scroll */
+            * {
+              max-width: 100%;
+            }
+            
+            /* Optimize animations for mobile performance */
+            .animate-spin,
+            .animate-pulse,
+            .animate-bounce {
+              will-change: transform;
+            }
+          }
+          
+          /* Tablet optimizations */
+          @media (min-width: 641px) and (max-width: 1024px) {
+            /* Adjust spacing for tablets */
+            .game-container {
+              padding: 1rem;
+            }
+          }
+          
+          /* Laptop optimizations - Make game smaller */
+          @media (min-width: 1025px) and (max-width: 1440px) {
+            /* Scale down game area for laptop screens */
+            .game-area-laptop {
+              transform: scale(0.85) !important;
+              transform-origin: center top;
+            }
+          }
+          
+          /* Prevent text selection on game elements */
+          .game-area * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+          }
+          
+          /* Improve touch interactions */
+          @media (hover: none) and (pointer: coarse) {
+            button:active {
+              transform: scale(0.95);
+            }
+          }
         `}</style>
       </div>
     </ProtectedRoute>
@@ -1432,4 +1349,3 @@ function SweetBonanzaPage() {
 }
 
 export default SweetBonanzaPage
-

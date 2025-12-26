@@ -1259,35 +1259,37 @@ function SweetBonanzaPage() {
           </div>
         </main>
 
+       
         {/* Game Rules Modal */}
         {showGameRules && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={() => setShowGameRules(false)}>
-            <div className="bg-gradient-to-br from-[#1a0f2e] via-[#2d1b4e] to-[#1a0f2e] rounded-2xl p-6 md:p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-white/20 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4" onClick={() => setShowGameRules(false)}>
+            <div className="bg-gradient-to-br from-[#1a0f2e] via-[#2d1b4e] to-[#1a0f2e] rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 max-w-2xl w-full mx-2 sm:mx-4 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto border-2 border-white/20 shadow-2xl custom-scrollbar" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4 md:mb-6">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 pr-2">
                   SWEET BONANZA - GAME RULES
                 </h2>
                 <button
                   onClick={() => setShowGameRules(false)}
-                  className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all flex-shrink-0"
+                  aria-label="Close"
                 >
-                  <span className="material-symbols-outlined text-white">close</span>
+                  <span className="material-symbols-outlined text-white text-lg md:text-xl">close</span>
                 </button>
               </div>
 
-              <div className="space-y-6 text-white">
+              <div className="space-y-4 md:space-y-6 text-white">
                 {/* Game Overview */}
                 <div>
-                  <h3 className="text-xl font-bold mb-3 text-yellow-400">Game Overview</h3>
-                  <p className="text-white/80 leading-relaxed">
+                  <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-yellow-400">Game Overview</h3>
+                  <p className="text-white/80 leading-relaxed text-sm md:text-base">
                     Sweet Bonanza is a 6-reel, 5-row slot game with a cluster pays mechanic. Match symbols horizontally or vertically to win!
                   </p>
                 </div>
 
                 {/* How to Play */}
                 <div>
-                  <h3 className="text-xl font-bold mb-3 text-yellow-400">How to Play</h3>
-                  <ul className="space-y-2 text-white/80 list-disc list-inside">
+                  <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-yellow-400">How to Play</h3>
+                  <ul className="space-y-2 text-white/80 list-disc list-inside text-sm md:text-base">
                     <li>Set your bet amount using the +/- buttons or quick bet options</li>
                     <li>Click the SPIN button to start the game</li>
                     <li>Match 8 or more identical symbols anywhere on the reels to win</li>
@@ -1298,51 +1300,51 @@ function SweetBonanzaPage() {
 
                 {/* Symbol Multipliers */}
                 <div>
-                  <h3 className="text-xl font-bold mb-3 text-yellow-400">Symbol Multipliers</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">💎</span>
-                      <span className="font-bold text-yellow-400">100x</span>
+                  <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-yellow-400">Symbol Multipliers</h3>
+                  <div className="grid grid-cols-3 gap-2 md:gap-3">
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">💎</span>
+                      <span className="font-bold text-yellow-400 text-sm md:text-base">100x</span>
                     </div>
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">⭐</span>
-                      <span className="font-bold text-yellow-400">50x</span>
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">⭐</span>
+                      <span className="font-bold text-yellow-400 text-sm md:text-base">50x</span>
                     </div>
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">🍓</span>
-                      <span className="font-bold text-pink-400">20x</span>
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">🍓</span>
+                      <span className="font-bold text-pink-400 text-sm md:text-base">20x</span>
                     </div>
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">🍎</span>
-                      <span className="font-bold text-red-400">15x</span>
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">🍎</span>
+                      <span className="font-bold text-red-400 text-sm md:text-base">15x</span>
                     </div>
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">🍌</span>
-                      <span className="font-bold text-yellow-300">12x</span>
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">🍌</span>
+                      <span className="font-bold text-yellow-300 text-sm md:text-base">12x</span>
                     </div>
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">🍉</span>
-                      <span className="font-bold text-green-400">10x</span>
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">🍉</span>
+                      <span className="font-bold text-green-400 text-sm md:text-base">10x</span>
                     </div>
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">🍊</span>
-                      <span className="font-bold text-orange-400">8x</span>
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">🍊</span>
+                      <span className="font-bold text-orange-400 text-sm md:text-base">8x</span>
                     </div>
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">🍋</span>
-                      <span className="font-bold text-yellow-300">6x</span>
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">🍋</span>
+                      <span className="font-bold text-yellow-300 text-sm md:text-base">6x</span>
                     </div>
-                    <div className="bg-white/10 rounded-lg p-3 flex items-center justify-between">
-                      <span className="text-3xl">🍇</span>
-                      <span className="font-bold text-purple-400">5x</span>
+                    <div className="bg-white/10 rounded-lg p-2 md:p-3 flex items-center justify-between">
+                      <span className="text-2xl md:text-3xl">🍇</span>
+                      <span className="font-bold text-purple-400 text-sm md:text-base">5x</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Special Features */}
                 <div>
-                  <h3 className="text-xl font-bold mb-3 text-yellow-400">Special Features</h3>
-                  <ul className="space-y-2 text-white/80">
+                  <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-yellow-400">Special Features</h3>
+                  <ul className="space-y-2 text-white/80 text-sm md:text-base">
                     <li><strong className="text-white">Scatter Symbols (⭐ and 💎):</strong> Can appear anywhere and count towards cluster wins</li>
                     <li><strong className="text-white">Free Spins:</strong> Triggered by 3+ scatter symbols</li>
                     <li><strong className="text-white">Random Multiplier:</strong> Up to 100x multiplier in free spins</li>
@@ -1352,8 +1354,8 @@ function SweetBonanzaPage() {
 
                 {/* Winning Rules */}
                 <div>
-                  <h3 className="text-xl font-bold mb-3 text-yellow-400">Winning Rules</h3>
-                  <ul className="space-y-2 text-white/80 list-disc list-inside">
+                  <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-yellow-400">Winning Rules</h3>
+                  <ul className="space-y-2 text-white/80 list-disc list-inside text-sm md:text-base">
                     <li>Minimum 8 matching symbols required for a win</li>
                     <li>Symbols must be adjacent (horizontally or vertically)</li>
                     <li>Wins are calculated based on symbol multiplier × bet amount</li>
@@ -1364,18 +1366,18 @@ function SweetBonanzaPage() {
 
                 {/* Volatility */}
                 <div>
-                  <h3 className="text-xl font-bold mb-3 text-yellow-400">Volatility</h3>
-                  <p className="text-white/80">
+                  <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 text-yellow-400">Volatility</h3>
+                  <p className="text-white/80 text-sm md:text-base">
                     This game has <strong className="text-yellow-400">HIGH VOLATILITY</strong> (5/5). 
                     This means wins may be less frequent but can be significantly larger when they occur.
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end">
+              <div className="mt-4 md:mt-6 flex justify-end">
                 <button
                   onClick={() => setShowGameRules(false)}
-                  className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold rounded-lg transition-all"
+                  className="px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold rounded-lg transition-all text-sm md:text-base min-h-[44px]"
                 >
                   Close
                 </button>

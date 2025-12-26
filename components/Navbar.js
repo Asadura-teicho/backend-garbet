@@ -120,23 +120,25 @@ export default function Navbar() {
   }
 
   return (
-    <header className="flex flex-col sticky top-0 z-50 bg-[#151328]/95 backdrop-blur-md shadow-lg border-b border-white/5">
+    <header className="flex flex-col sticky top-0 z-50 bg-[#151328]/95 backdrop-blur-md shadow-lg border-b border-white/5 transition-all duration-300">
       {/* Top Bar */}
       <div className="flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 sm:py-2">
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-          <Link href="/" className="flex items-center">
-            <h2 className="text-white text-xl sm:text-2xl font-bold leading-tight tracking-[-0.015em] italic whitespace-nowrap">Garbet</h2>
+          <Link href="/" className="flex items-center group">
+            <h2 className="text-white text-xl sm:text-2xl font-bold leading-tight tracking-[-0.015em] italic whitespace-nowrap gradient-text transition-all duration-300 group-hover:scale-105">
+              Garbet
+            </h2>
           </Link>
         </div>
         {isLoggedIn && (
-          <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-            <Link href="/deposit" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-3 sm:px-4 bg-green-500 text-white text-xs font-bold leading-normal tracking-wide hover:bg-green-600 transition-all gap-1.5">
-              <span className="material-symbols-outlined text-sm sm:text-base flex-shrink-0">account_balance_wallet</span>
-              <span className="truncate hidden sm:inline">{t('common.depositButton')}</span>
+          <div className="hidden md:flex items-center gap-2 flex-shrink-0 relative z-0">
+            <Link href="/deposit" className="flex min-w-[84px] ml-12 max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-3 sm:px-4 bg-green-500 text-white text-xs font-bold leading-normal tracking-wide hover:bg-green-600 transition-all gap-1.5 hover-scale shadow-glow hover:shadow-glow-lg relative btn-glow z-0">
+              <span className="material-symbols-outlined text-sm sm:text-base flex-shrink-0 relative z-0">account_balance_wallet</span>
+              <span className="truncate hidden sm:inline relative z-0">{t('common.depositButton')}</span>
             </Link>
-            <Link href="/bonuses" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-3 sm:px-4 bg-yellow-500 text-black text-xs font-bold leading-normal tracking-wide hover:bg-yellow-600 transition-colors gap-1.5">
-              <span className="material-symbols-outlined text-sm sm:text-base flex-shrink-0">star</span>
-              <span className="truncate hidden sm:inline">{t('common.bonusesButton')}</span>
+            <Link href="/bonuses" className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-5 sm:px-4 bg-yellow-500 text-black text-xs font-bold leading-normal tracking-wide hover:bg-yellow-600 transition-all gap-1.5 hover-scale shadow-glow hover:shadow-glow-lg relative btn-glow z-0">
+              <span className="material-symbols-outlined text-sm sm:text-base flex-shrink-0 relative z-0">star</span>
+              <span className="truncate hidden sm:inline relative z-0">{t('common.bonusesButton')}</span>
             </Link>
           </div>
         )}
@@ -418,121 +420,109 @@ export default function Navbar() {
       )}
 
       {/* Navigation Bar */}
-      <nav className="hidden lg:flex items-center justify-center gap-6 border-t border-b border-white/10 bg-[#1f1d37] px-4 sm:px-6 lg:px-8 py-3">
-  <Link
-    href="/promotions"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/promotions') ? 'active' : ''}`}
-  >
-    <span className="material-symbols-outlined text-base">military_tech</span>
-    {t('common.promotions')}
-  </Link>
+      <nav className="hidden lg:flex items-center justify-center gap-6 border-t border-b border-white/10 bg-[#1f1d37] px-4 sm:px-6 lg:px-8 py-3 relative overflow-hidden">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 opacity-10 bg-gradient-to-r from-[#0dccf2] via-[#9333ea] to-[#0dccf2] bg-[length:200%_100%] animate-gradient-shift"></div>
+        
+        <Link
+          href="/promotions"
+          className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item hover-scale relative z-10 transition-all duration-300 ${isActive('/promotions') ? 'active shadow-glow' : ''}`}
+        >
+          <span className={`material-symbols-outlined text-base transition-transform duration-300 ${isActive('/promotions') ? 'icon-bounce' : ''}`}>military_tech</span>
+          {t('common.promotions')}
+        </Link>
 
-  <Link
-    href="/live-betting"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/live-betting') ? 'active' : ''}`}
-  >
-    <span
-      className="material-symbols-outlined text-base"
-      style={{ fontVariationSettings: isActive('/live-betting') ? "'FILL' 1" : "'FILL' 0" }}
-    >
-      bolt
-    </span>
-    {t('common.liveBet')}
-  </Link>
+        <Link
+          href="/live-betting"
+          className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item hover-scale relative z-10 transition-all duration-300 ${isActive('/live-betting') ? 'active shadow-glow' : ''}`}
+        >
+          <span
+            className={`material-symbols-outlined text-base transition-all duration-300 ${isActive('/live-betting') ? 'icon-spin animate-pulse-scale' : ''}`}
+            style={{ fontVariationSettings: isActive('/live-betting') ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            bolt
+          </span>
+          {t('common.liveBet')}
+        </Link>
 
-  <Link
-    href="/sports"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/sports') ? 'active' : ''}`}
-  >
-    <span
-      className="material-symbols-outlined text-base"
-      style={{ fontVariationSettings: isActive('/sports') ? "'FILL' 1" : "'FILL' 0" }}
-    >
-      sports_soccer
-    </span>
-    {t('common.sports')}
-  </Link>
+        <Link
+          href="/sports"
+          className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item hover-scale relative z-10 transition-all duration-300 ${isActive('/sports') ? 'active shadow-glow' : ''}`}
+        >
+          <span
+            className={`material-symbols-outlined text-base transition-transform duration-300 ${isActive('/sports') ? 'icon-bounce' : ''}`}
+            style={{ fontVariationSettings: isActive('/sports') ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            sports_soccer
+          </span>
+          {t('common.sports')}
+        </Link>
 
-  <Link
-    href="/slots"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/slots') ? 'active' : ''}`}
-  >
-    <span
-      className="material-symbols-outlined text-base"
-      style={{ fontVariationSettings: isActive('/slots') ? "'FILL' 1" : "'FILL' 0" }}
-    >
-      casino
-    </span>
-    {t('common.slotGames')}
-  </Link>
+        <Link
+          href="/slots"
+          className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item hover-scale relative z-10 transition-all duration-300 ${isActive('/slots') ? 'active shadow-glow' : ''}`}
+        >
+          <span
+            className={`material-symbols-outlined text-base transition-transform duration-300 ${isActive('/slots') ? 'icon-bounce' : ''}`}
+            style={{ fontVariationSettings: isActive('/slots') ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            casino
+          </span>
+          {t('common.slotGames')}
+        </Link>
 
-  {/* COMMENTED OUT - Live Casino Disabled
-  <Link
-    href="/live-casino"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/live-casino') ? 'active' : ''}`}
-  >
-    <span
-      className="material-symbols-outlined text-base"
-      style={{ fontVariationSettings: isActive('/live-casino') ? "'FILL' 1" : "'FILL' 0" }}
-    >
-      playing_cards
-    </span>
-    {t('common.liveCasino')}
-  </Link>
-  */}
+        <Link
+          href="/crash"
+          className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item hover-scale relative z-10 transition-all duration-300 ${isActive('/crash') ? 'active shadow-glow' : ''}`}
+        >
+          <span
+            className={`material-symbols-outlined text-base transition-transform duration-300 ${isActive('/crash') ? 'animate-pulse-scale' : ''}`}
+            style={{ fontVariationSettings: isActive('/crash') ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            trending_up
+          </span>
+          {t('common.crash')}
+        </Link>
 
-  <Link
-    href="/crash"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/crash') ? 'active' : ''}`}
-  >
-    <span
-      className="material-symbols-outlined text-base"
-      style={{ fontVariationSettings: isActive('/crash') ? "'FILL' 1" : "'FILL' 0" }}
-    >
-      trending_up
-    </span>
-    {t('common.crash')}
-  </Link>
+        <Link
+          href="/tv-games"
+          className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item hover-scale relative z-10 transition-all duration-300 ${isActive('/tv-games') ? 'active shadow-glow' : ''}`}
+        >
+          <span
+            className={`material-symbols-outlined text-base transition-transform duration-300 ${isActive('/tv-games') ? 'icon-bounce' : ''}`}
+            style={{ fontVariationSettings: isActive('/tv-games') ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            live_tv
+          </span>
+          {t('common.tvGames')}
+        </Link>
 
-  <Link
-    href="/tv-games"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/tv-games') ? 'active' : ''}`}
-  >
-    <span
-      className="material-symbols-outlined text-base"
-      style={{ fontVariationSettings: isActive('/tv-games') ? "'FILL' 1" : "'FILL' 0" }}
-    >
-      live_tv
-    </span>
-    {t('common.tvGames')}
-  </Link>
+        <Link
+          href="/tournaments"
+          className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item hover-scale relative z-10 transition-all duration-300 ${isActive('/tournaments') ? 'active shadow-glow' : ''}`}
+        >
+          <span
+            className={`material-symbols-outlined text-base transition-transform duration-300 ${isActive('/tournaments') ? 'icon-bounce' : ''}`}
+            style={{ fontVariationSettings: isActive('/tournaments') ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            emoji_events
+          </span>
+          {t('common.tournaments')}
+        </Link>
 
-  <Link
-    href="/tournaments"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/tournaments') ? 'active' : ''}`}
-  >
-    <span
-      className="material-symbols-outlined text-base"
-      style={{ fontVariationSettings: isActive('/tournaments') ? "'FILL' 1" : "'FILL' 0" }}
-    >
-      emoji_events
-    </span>
-    {t('common.tournaments')}
-  </Link>
-
-  <Link
-    href="/more"
-    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item ${isActive('/more') ? 'active' : ''}`}
-  >
-    <span
-      className="material-symbols-outlined text-base"
-      style={{ fontVariationSettings: isActive('/more') ? "'FILL' 1" : "'FILL' 0" }}
-    >
-      more_horiz
-    </span>
-    {t('common.more')}
-  </Link>
-</nav>
+        <Link
+          href="/more"
+          className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg secondary-nav-item hover-scale relative z-10 transition-all duration-300 ${isActive('/more') ? 'active shadow-glow' : ''}`}
+        >
+          <span
+            className={`material-symbols-outlined text-base transition-transform duration-300 ${isActive('/more') ? 'icon-bounce' : ''}`}
+            style={{ fontVariationSettings: isActive('/more') ? "'FILL' 1" : "'FILL' 0" }}
+          >
+            more_horiz
+          </span>
+          {t('common.more')}
+        </Link>
+      </nav>
     </header>
   )
 }

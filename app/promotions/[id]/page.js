@@ -174,7 +174,7 @@ export default function PromotionDetailPage() {
                 alt={promotion.title}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  e.target.src = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop'
+                  e.target.src = 'https://static.vecteezy.com/system/resources/previews/005/525/145/non_2x/online-casino-welcome-bonus-banner-for-website-with-button-slot-machine-casino-roulette-poker-chips-playing-cards-on-podium-with-round-neon-frame-vector.jpg'
                 }}
               />
             </div>

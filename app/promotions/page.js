@@ -181,10 +181,10 @@ export default function PromotionsPage() {
       <Navbar />
       <div className="layout-container flex h-full grow flex-col">
 
-        <main className="flex-1 px-4 py-8 md:px-8 lg:px-16 xl:px-24">
+        <main className="flex-1 px-4 py-8 md:px-8 lg:px-16 xl:px-24 pt-16 md:pt-20">
           <div className="mx-auto flex max-w-7xl flex-col gap-8">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <h1 className="text-white text-4xl md:text-5xl font-black leading-tight tracking-[-0.033em]">Promotions</h1>
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 md:pt-6 relative z-0">
+              <h1 className="text-white text-4xl md:text-5xl font-black leading-tight tracking-[-0.033em] relative z-0">Promotions</h1>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -252,7 +252,7 @@ export default function PromotionsPage() {
                         className="w-full aspect-video object-cover transition-all duration-300 group-hover:brightness-110 group-hover:scale-105"
                         onError={(e) => {
                           // Fallback to a default image if the image fails to load
-                          e.target.src = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop'
+                          e.target.src = 'https://static.vecteezy.com/system/resources/previews/005/525/145/non_2x/online-casino-welcome-bonus-banner-for-website-with-button-slot-machine-casino-roulette-poker-chips-playing-cards-on-podium-with-round-neon-frame-vector.jpg'
                         }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/40 transition-all duration-300">
@@ -404,7 +404,7 @@ export default function PromotionsPage() {
                 className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl animate-scale-in"
                 onClick={(e) => e.stopPropagation()}
                 onError={(e) => {
-                  e.target.src = 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop'
+                  e.target.src = 'https://static.vecteezy.com/system/resources/previews/005/525/145/non_2x/online-casino-welcome-bonus-banner-for-website-with-button-slot-machine-casino-roulette-poker-chips-playing-cards-on-podium-with-round-neon-frame-vector.jpg'
                 }}
               />
             </div>

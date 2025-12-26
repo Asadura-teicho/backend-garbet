@@ -14,7 +14,7 @@ export default function TVGamesPage() {
       id: 1,
       name: 'Wheel of Fortune',
       category: 'wheel',
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=400&fit=crop',
+      image: 'https://www.nintendo.com/eu/media/images/10_share_images/games_15/nintendo_switch_download_software_1/H2x1_NSwitchDS_WheelOfFortune_image1600w.jpg',
       players: 1247,
       prize: 12500
     },
@@ -22,7 +22,7 @@ export default function TVGamesPage() {
       id: 2,
       name: 'Lucky Numbers',
       category: 'numbers',
-      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=400&fit=crop',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2oC-DOHGP-qQBRAgdDsxXuxyOlrIG3P7Skw&s',
       players: 892,
       prize: 8500
     },
@@ -30,7 +30,7 @@ export default function TVGamesPage() {
       id: 3,
       name: 'Keno Live',
       category: 'keno',
-      image: 'https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?w=300&h=400&fit=crop',
+      image: 'https://www.shutterstock.com/shutterstock/photos/1392120926/display_1500/stock-vector-keno-lottery-game-logo-template-isolated-on-white-template-isolated-on-white-1392120926.jpg',
       players: 2156,
       prize: 18900
     },
@@ -38,7 +38,7 @@ export default function TVGamesPage() {
       id: 4,
       name: 'Bingo Live',
       category: 'bingo',
-      image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=400&fit=crop',
+      image: 'https://media.istockphoto.com/id/1147844177/vector/bingo-lottery-game-logo.jpg?s=612x612&w=0&k=20&c=L6kRUX4qrFGFuctbB7tJ6JkTryFfdNeXLxFCWio0K6Y=',
       players: 3456,
       prize: 25000
     },
@@ -46,7 +46,7 @@ export default function TVGamesPage() {
       id: 5,
       name: 'Lottery Draw',
       category: 'lottery',
-      image: 'https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=300&h=400&fit=crop',
+      image: 'https://gametik-studio.com/cdn/shop/files/Player_Lottery_Logo.png?v=1738947627',
       players: 5678,
       prize: 50000
     },
@@ -54,7 +54,7 @@ export default function TVGamesPage() {
       id: 6,
       name: 'Spin the Wheel',
       category: 'wheel',
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=400&fit=crop',
+      image: 'https://play-lh.googleusercontent.com/JHiKVEovdXgrQyU0Nn0d94_LVv54JV5aYBjfikQBvjUjgYac8BAU-B-BHP5La9bxKnUzt5cK1FII4WaREJVKeA=w526-h296-rw',
       players: 2341,
       prize: 15000
     },

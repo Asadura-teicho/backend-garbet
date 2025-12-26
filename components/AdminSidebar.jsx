@@ -65,6 +65,7 @@ export default function AdminSidebar() {
       <aside className={`fixed left-0 top-0 h-screen w-64 flex flex-col bg-background-dark border-r border-surface p-4 z-[95] transition-transform duration-300 ease-in-out ${
         isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
+<<<<<<< HEAD
       <div className="flex items-center justify-between mb-8 px-2 min-w-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary flex-shrink-0">
@@ -73,6 +74,16 @@ export default function AdminSidebar() {
           <div className="flex flex-col min-w-0 flex-1">
             <h1 className="text-base font-bold text-white truncate">{t('admin.title')}</h1>
             <p className="text-sm text-gray-400 truncate">{t('admin.management')}</p>
+=======
+      <div className="flex items-center justify-between mb-8 px-2">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+            <span className="material-symbols-outlined text-black">casino</span>
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-base font-bold text-white">{t('admin.title')}</h1>
+            <p className="text-sm text-gray-400">{t('admin.management')}</p>
+>>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
           </div>
         </div>
         {/* Close button for mobile */}
@@ -91,7 +102,11 @@ export default function AdminSidebar() {
             key={item.id}
             href={item.href}
             onClick={() => setIsMobileOpen(false)}
+<<<<<<< HEAD
             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors min-w-0 ${
+=======
+            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+>>>>>>> 899d27a5f237b67a3dd57ea0636ecfe09070ddd6
               pathname === item.href || (item.id === 'dashboard' && pathname === '/admin') || pathname.startsWith(item.href + '/')
                 ? 'bg-primary/20 text-primary'
                 : 'text-gray-300 hover:bg-white/10'
